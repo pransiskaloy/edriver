@@ -15,7 +15,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
   TextEditingController carNumberTextEditingController = TextEditingController();
   TextEditingController carColorTextEditingController = TextEditingController();
 
-  List<String> carTypesList = ["Furfetch - x", "Furfetch - go", "Motorcycle"];
+  List<String> carTypesList = ["Furfetch-x", "Furfetch-go", "Motorcycle"];
   String? selectedCarType;
 
   saveCareInfo() {
