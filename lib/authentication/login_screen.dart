@@ -97,9 +97,6 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(30.0),
               child: Image.asset("images/logo1.png"),
             ),
-            const SizedBox(
-              height: 10,
-            ),
             const Text(
               "Welcome Driver",
               style: TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
@@ -178,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
               },
             ),
             const SizedBox(
-              height: 50,
+              height: 30,
             ),
             ElevatedButton(
               onPressed: () {

@@ -36,7 +36,7 @@ class _MySplashScreenState extends State<MySplashScreen> {
   Widget build(BuildContext context) {
     return Material(
       child: Container(
-          color: Colors.blue,
+          color: const Color(0xFF4F6CAD),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +46,7 @@ class _MySplashScreenState extends State<MySplashScreen> {
                   height: 10,
                 ),
                 const Text(
-                  "Furfetch App",
+                  "",
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.white,

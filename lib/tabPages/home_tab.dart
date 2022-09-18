@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:edriver/assistants/assistant_methods.dart';
 import 'package:edriver/global/global.dart';
 import 'package:edriver/main.dart';
+import 'package:edriver/pushNotificatons/push_notification_system.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
@@ -172,11 +173,19 @@ class _HomeTabPageState extends State<HomeTabPage> {
     String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoordinates(driverCurrentPosition!, context);
   }
 
+  readCurrentDriverInformation() async {
+    currentFirebaseUser = fAuth.currentUser;
+    PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
+    pushNotificationSystem.initializeCloudMessaging();
+    pushNotificationSystem.generateAndGetToken();
+  }
+
   @override
   void initState() {
     super.initState();
 
     checkIfLocationPermissionAllowed();
+    readCurrentDriverInformation();
   }
 
   @override
