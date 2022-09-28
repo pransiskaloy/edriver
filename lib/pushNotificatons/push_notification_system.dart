@@ -50,6 +50,7 @@ class PushNotificationSystem {
 
         String userName = (snapData.snapshot.value as Map)["userName"];
         String userPhone = (snapData.snapshot.value as Map)["userPhone"];
+        String rideRequestId = userRideRequestId;
 
         UserRideRequestInformation userRideRequestDetails = UserRideRequestInformation();
         userRideRequestDetails.originLatLng = LatLng(originLat, originLng);
@@ -59,6 +60,7 @@ class PushNotificationSystem {
 
         userRideRequestDetails.userName = userName;
         userRideRequestDetails.userPhone = userPhone;
+        userRideRequestDetails.rideRequestId = rideRequestId;
 
         showDialog(
           context: context,
@@ -74,8 +76,6 @@ class PushNotificationSystem {
 
   Future generateAndGetToken() async {
     String? registrationToken = await messaging.getToken();
-    print("FCM Registration Token:***************************************");
-    print(registrationToken);
 
     FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("token").set(registrationToken);
 

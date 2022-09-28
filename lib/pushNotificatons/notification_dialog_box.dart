@@ -1,7 +1,11 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:edriver/assistants/assistant_methods.dart';
 import 'package:edriver/global/global.dart';
+import 'package:edriver/mainScreens/new_trip_screen.dart';
 import 'package:edriver/models/user_ride_request_information.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class NotificationDialogBox extends StatefulWidget {
@@ -142,7 +146,14 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
 
                           Navigator.pop(context);
                         },
-                        style: ElevatedButton.styleFrom(primary: Colors.white, elevation: 0, side: BorderSide(width: 1, color: Colors.red)),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          elevation: 0,
+                          side: const BorderSide(width: 1, color: Colors.red),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50), // <-- Radius
+                          ),
+                        ),
                         child: Text(
                           "CANCEL",
                           style: GoogleFonts.poppins(
@@ -159,9 +170,16 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                           audioPlayer.stop();
                           audioPlayer = AssetsAudioPlayer();
 
-                          Navigator.pop(context);
+                          //accept the ride request
+                          acceptRideRequest(context);
                         },
-                        style: ElevatedButton.styleFrom(primary: Colors.green, elevation: 0),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50), // <-- Radius
+                          ),
+                        ),
                         child: Text(
                           "ACCEPT",
                           style: GoogleFonts.poppins(
@@ -181,5 +199,25 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
         ),
       ),
     );
+  }
+
+  acceptRideRequest(BuildContext context) {
+    String getRideRequestId = "";
+    FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideStatus").once().then((snap) {
+      if (snap.snapshot.value != null) {
+        getRideRequestId = snap.snapshot.value.toString();
+      } else {
+        Fluttertoast.showToast(msg: "Ride Request was canceled!");
+      }
+
+      if (getRideRequestId == widget.userRideRequestDetails!.rideRequestId) {
+        FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideRequest").set("accepted");
+        AssistantMethods.pauseLiveLocationUpdates();
+        //proceed to trip screen when the driver accepts the ride request
+        Navigator.push(context, MaterialPageRoute(builder: (c) => NewTripScreen(userRideRequestDetails: widget.userRideRequestDetails)));
+      } else {
+        Fluttertoast.showToast(msg: "Ride Request was canceled!");
+      }
+    });
   }
 }
