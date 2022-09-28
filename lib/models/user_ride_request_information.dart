@@ -7,6 +7,7 @@ class UserRideRequestInformation {
   String? destinationAddress;
   String? userName;
   String? userPhone;
+  String? rideRequestId;
 
   UserRideRequestInformation({
     this.originLatLng,
@@ -15,5 +16,6 @@ class UserRideRequestInformation {
     this.destinationLatLng,
     this.userName,
     this.userPhone,
+    this.rideRequestId,
   });
 }
