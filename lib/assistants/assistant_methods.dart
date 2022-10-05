@@ -4,6 +4,7 @@ import 'package:edriver/global/maps_key.dart';
 import 'package:edriver/infoHandler/app_info.dart';
 import 'package:edriver/models/direction_details_info.dart';
 import 'package:edriver/models/directions.dart';
+import 'package:edriver/models/trips_history_model.dart';
 import 'package:edriver/models/user_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
@@ -70,5 +71,82 @@ class AssistantMethods {
   static resumeLiveLocationUpdates() {
     streamSubscriptionPosition!.pause();
     Geofire.setLocation(currentFirebaseUser!.uid, driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
+  }
+
+  static double calculateFareAmountFromOriginToDestination(DirectionDetailsInfo directionDetailsInfo) {
+    double timeTraveledFarePerMinute = (directionDetailsInfo.duration_value! / 60) * 0.1; //0.1 is dollar charge per minute
+    double distanceTraveledFarePerKilometer = (directionDetailsInfo.duration_value! / 1000) * 0.1; //0.1 is dollar charge per minute
+
+    //1 USD = 54 Pesos
+    double totalFareAmount = timeTraveledFarePerMinute + distanceTraveledFarePerKilometer;
+    double localCurrencyTotalFare = totalFareAmount * 40;
+
+    double resultFareAmount = 0.0;
+    if (driverVehicleType == "Motorcycle") {
+      resultFareAmount = localCurrencyTotalFare / 2.0;
+    } else if (driverVehicleType == "Furfetch-go") {
+      resultFareAmount = localCurrencyTotalFare;
+    } else if (driverVehicleType == "Furfetch-x") {
+      resultFareAmount = localCurrencyTotalFare * 2.0;
+    }
+    return double.parse(resultFareAmount.toStringAsFixed(1));
+  }
+
+  //retrieve the trip keys
+  //trip keys - ride request uid
+  static void readTripKeysForOnlineDriver(context) {
+    FirebaseDatabase.instance.ref().child("All Ride Request").orderByChild("driverId").equalTo(fAuth.currentUser!.uid).once().then((snap) {
+      if (snap.snapshot.value != null) {
+        Map keyTripsId = snap.snapshot.value as Map;
+
+        //count total number of trip and share it with Provider
+        int overAllTripsCounter = keyTripsId.length;
+        Provider.of<AppInfo>(context, listen: false).updateOverAllTripsCounter(overAllTripsCounter);
+
+        //share trips keys with Provider
+        List<String> tripsKeyList = [];
+        keyTripsId.forEach((key, value) {
+          tripsKeyList.add(key);
+        });
+        Provider.of<AppInfo>(context, listen: false).updateOverAllTripsKeys(tripsKeyList);
+
+        //get trip keys data - trips complete information
+        readTripsHistoryInformation(context);
+      }
+    });
+  }
+
+  static void readTripsHistoryInformation(context) {
+    var tripsAllKeys = Provider.of<AppInfo>(context, listen: false).historyTripsKeysList;
+
+    for (String eachKey in tripsAllKeys) {
+      FirebaseDatabase.instance.ref().child("All Ride Request").child(eachKey).once().then((snap) {
+        var eachHistoryTrip = TripsHistoryModel.fromSnapshot(snap.snapshot);
+
+        if ((snap.snapshot.value as Map)["status"] == "ended") {
+          //update OverAllTrips History Data
+          Provider.of<AppInfo>(context, listen: false).updateOverAllHistoryInformation(eachHistoryTrip);
+        }
+      });
+    }
+  }
+
+  //read driver earnings
+  static void readDriverEarnings(context) {
+    FirebaseDatabase.instance.ref().child("drivers").child(fAuth.currentUser!.uid).child("earnings").once().then((snap) {
+      if (snap.snapshot.value != null) {
+        String driverEarnings = snap.snapshot.value.toString();
+        Provider.of<AppInfo>(context, listen: false).updateDriverEarnings(driverEarnings);
+      }
+    });
+  }
+
+  static void readDriverRatings(context) {
+    FirebaseDatabase.instance.ref().child("drivers").child(fAuth.currentUser!.uid).child("ratings").once().then((snap) {
+      if (snap.snapshot.value != null) {
+        String driverRatings = snap.snapshot.value.toString();
+        Provider.of<AppInfo>(context, listen: false).updateDriverAverageRatings(driverRatings);
+      }
+    });
   }
 }

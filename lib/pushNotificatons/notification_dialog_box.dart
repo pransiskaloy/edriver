@@ -3,8 +3,10 @@ import 'package:edriver/assistants/assistant_methods.dart';
 import 'package:edriver/global/global.dart';
 import 'package:edriver/mainScreens/new_trip_screen.dart';
 import 'package:edriver/models/user_ride_request_information.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -144,7 +146,15 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                           audioPlayer.stop();
                           audioPlayer = AssetsAudioPlayer();
 
-                          Navigator.pop(context);
+                          FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).remove().then((snap) {
+                            FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideStatus").set("idle");
+                            FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideRequest").set("idle");
+                          }).then((value) {
+                            FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("trip_history").child(widget.userRideRequestDetails!.rideRequestId!).remove();
+                          }).then((value) {
+                            Fluttertoast.showToast(msg: "Ride request has been canceled!");
+                          });
+                          SystemNavigator.pop();
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.white,
