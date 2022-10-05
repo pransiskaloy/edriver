@@ -1,7 +1,7 @@
-import 'package:edriver/tabPages/earnings_tab.dart';
+// import 'package:edriver/tabPages/earnings_tab.dart';
 import 'package:edriver/tabPages/home_tab.dart';
 import 'package:edriver/tabPages/profile_tab.dart';
-import 'package:edriver/tabPages/ratings_tab.dart';
+import 'package:edriver/tabPages/history_tab.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -11,8 +11,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen>
-    with SingleTickerProviderStateMixin {
+class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateMixin {
   TabController? tabController;
   int selectedIndex = 0;
 
@@ -27,7 +26,7 @@ class _MainScreenState extends State<MainScreen>
   void initState() {
     super.initState();
 
-    tabController = TabController(length: 4, vsync: this);
+    tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -38,7 +37,7 @@ class _MainScreenState extends State<MainScreen>
         controller: tabController,
         children: const [
           HomeTabPage(),
-          EarningsTabPage(),
+          // EarningsTabPage(),
           RatingsTabPage(),
           ProfileTabPage(),
         ],
@@ -49,22 +48,22 @@ class _MainScreenState extends State<MainScreen>
             icon: Icon(Icons.home_rounded),
             label: "Home",
           ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.credit_card_rounded),
+          //   label: "Earnings",
+          // ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.credit_card_rounded),
-            label: "Earn",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star_half_outlined),
-            label: "Rate",
+            icon: Icon(Icons.history_rounded),
+            label: "History",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: "Account",
+            label: "Profile",
           ),
         ],
-        unselectedItemColor: Colors.white54,
-        selectedItemColor: Colors.white,
-        backgroundColor: Colors.blue.shade300,
+        // unselectedItemColor: Colors.white54,
+        // selectedItemColor: Colors.white,
+        // backgroundColor: Colors.blue.shade300,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: const TextStyle(fontSize: 14),
         showUnselectedLabels: true,

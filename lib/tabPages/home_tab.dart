@@ -31,10 +31,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
 
-  String statusText = "Turn Online";
-  Color buttonColor = Colors.green;
-  bool isDriverActive = false;
-
   checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
 
@@ -44,6 +40,22 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   locateDriverPosition() async {
+    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    driverCurrentPosition = cPosition;
+
+    LatLng latLngPosition = LatLng(driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
+    CameraPosition cameraPosition = CameraPosition(target: latLngPosition, zoom: 14);
+
+    newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoordinates(driverCurrentPosition!, context);
+
+    AssistantMethods.readDriverRatings(context);
+    AssistantMethods.readDriverEarnings(context);
+    AssistantMethods.readTripKeysForOnlineDriver(context);
+  }
+
+  readCurrentDriverInformation() async {
+    currentFirebaseUser = fAuth.currentUser;
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid);
     databaseReference.onValue.listen((snap) {
       if (snap.snapshot.value != null) {
@@ -55,22 +67,10 @@ class _HomeTabPageState extends State<HomeTabPage> {
         onlineDriverData.car_model = (snap.snapshot.value as Map)["car_details"]["car_model"];
         onlineDriverData.car_number = (snap.snapshot.value as Map)["car_details"]["car_number"];
         onlineDriverData.car_type = (snap.snapshot.value as Map)["car_details"]["car_type"];
+
+        driverVehicleType = onlineDriverData.car_type;
       }
     });
-    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    driverCurrentPosition = cPosition;
-
-    LatLng latLngPosition = LatLng(driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
-    CameraPosition cameraPosition = CameraPosition(target: latLngPosition, zoom: 14);
-
-    newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-    String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoordinates(driverCurrentPosition!, context);
-  }
-
-  readCurrentDriverInformation() async {
-    currentFirebaseUser = fAuth.currentUser;
-
-    print("Push notif here***********************************************************************************************");
     PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
     pushNotificationSystem.initializeCloudMessaging(context);
     pushNotificationSystem.generateAndGetToken();
@@ -195,9 +195,12 @@ class _HomeTabPageState extends State<HomeTabPage> {
     );
 
     DatabaseReference ref = FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideStatus");
+    DatabaseReference ref2 = FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideRequest");
 
     ref.set("idle"); //searching for ride request
     ref.onValue.listen((event) {});
+    ref2.set("idle"); //searching for ride request
+    ref2.onValue.listen((event) {});
   }
 
   updateDriversLocationAtRealTime() {
@@ -224,10 +227,14 @@ class _HomeTabPageState extends State<HomeTabPage> {
     Geofire.removeLocation(currentFirebaseUser!.uid);
 
     DatabaseReference? ref = FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideStatus");
+    DatabaseReference? ref2 = FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideRequest");
 
     ref.onDisconnect();
     ref.remove();
     ref = null;
+    ref2.onDisconnect();
+    ref2.remove();
+    ref2 = null;
 
     Future.delayed(const Duration(milliseconds: 2000), () {
       // SystemChannels.platform.invokeMethod("SystemNavigator.pop");
