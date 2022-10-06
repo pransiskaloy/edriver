@@ -5,10 +5,12 @@ import 'package:flutter/cupertino.dart';
 class AppInfo extends ChangeNotifier {
   Directions? userPickUpLocation, userDropOffLocation;
   int countTotalTrips = 0;
+  int countTotalChats = 0;
   String driverTotalEarnings = "0";
   String driverAverageRatings = "0";
   List<String> historyTripsKeysList = [];
   List<TripsHistoryModel> allTripsHistoryInformationList = [];
+  List<String> chatKeysList = [];
 
   void updatePickUpLocation(Directions userPickUpAddress) {
     userPickUpLocation = userPickUpAddress;

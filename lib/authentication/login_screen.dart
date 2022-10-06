@@ -3,6 +3,7 @@ import 'package:edriver/splashScreen/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../global/global.dart';
 import '../widgets/progress_dialog.dart';
@@ -17,6 +18,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
+  bool _passwordVisible = false;
 
   validateForm(BuildContext context) {
     if (!emailTextEditingController.text.contains("@") || !emailTextEditingController.text.contains(".")) {
@@ -93,103 +95,160 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Image.asset("images/logo1.png"),
+            Image.asset("images/loginTop.png"),
+            const SizedBox(
+              height: 20,
             ),
-            const Text(
-              "Welcome Driver",
-              style: TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
+            Container(
+              width: MediaQuery.of(context).size.width * .93,
+              padding: const EdgeInsets.all(15),
               child: TextField(
                 controller: emailTextEditingController,
                 keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-                decoration: const InputDecoration(
-                  labelText: "Email",
-                  hintText: "jdcruz@gmail.com",
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  hintStyle: TextStyle(
-                    color: Colors.white38,
-                    fontSize: 15,
-                  ),
-                  labelStyle: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 20,
-                  ),
-                ),
+                decoration: InputDecoration(
+                    prefixIcon: const Padding(
+                      padding: EdgeInsets.only(left: 10.0),
+                      child: Icon(
+                        Icons.person_rounded,
+                        color: Color(0xFF4F6CAD),
+                        size: 20,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.only(left: 30),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40.0),
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                      borderSide: BorderSide(color: Color(0xFF4F6CAD)),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                      borderSide: BorderSide(color: Color(0xFF4F6CAD)),
+                    ),
+                    filled: true,
+                    hintText: "Enter username...",
+                    hintStyle: const TextStyle(
+                      color: Color.fromARGB(255, 172, 170, 170),
+                      letterSpacing: 1.5,
+                    ),
+                    labelText: "Username",
+                    labelStyle: const TextStyle(
+                      color: Color(0xFF4F6CAD),
+                      fontSize: 18,
+                    ),
+                    fillColor: Colors.white70),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
+            Container(
+              width: MediaQuery.of(context).size.width * .93,
+              padding: const EdgeInsets.all(15),
               child: TextField(
                 controller: passwordTextEditingController,
                 keyboardType: TextInputType.text,
-                obscureText: true,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-                decoration: const InputDecoration(
-                  labelText: "Password",
-                  hintText: "Password",
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  hintStyle: TextStyle(
-                    color: Colors.white38,
-                    fontSize: 15,
-                  ),
-                  labelStyle: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 20,
-                  ),
-                ),
+                obscureText: !_passwordVisible,
+                decoration: InputDecoration(
+                    prefixIcon: const Padding(
+                      padding: EdgeInsets.only(left: 10.0),
+                      child: Icon(
+                        Icons.lock_rounded,
+                        color: Color(0xFF4F6CAD),
+                        size: 20,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.only(left: 30),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40.0),
+                    ),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: IconButton(
+                        icon: Icon(
+                          // Based on passwordVisible state choose the icon
+                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: const Color(0xFF4F6CAD),
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          // Update the state i.e. toogle the state of passwordVisible variable
+                          setState(() {
+                            _passwordVisible = !_passwordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                      borderSide: BorderSide(color: Color(0xFF4F6CAD)),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                      borderSide: BorderSide(color: Color(0xFF4F6CAD)),
+                    ),
+                    filled: true,
+                    hintText: "*******",
+                    hintStyle: const TextStyle(
+                      color: Color.fromARGB(255, 172, 170, 170),
+                      letterSpacing: 1.5,
+                    ),
+                    labelText: "Password",
+                    labelStyle: const TextStyle(
+                      color: Color(0xFF4F6CAD),
+                      fontSize: 18,
+                    ),
+                    fillColor: Colors.white70),
               ),
             ),
             const SizedBox(
-              height: 5,
+              height: 25,
             ),
-            TextButton(
-              child: const Text(
-                "Don't have an Account? Sign Up here",
-                style: TextStyle(color: Colors.white70, fontSize: 18),
-              ),
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (c) => SignUpScreen()));
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Don't have an Account?",
+                  style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                      color: Color(0xFF4F6CAD),
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  child: Text("Sign Up here",
+                      style: GoogleFonts.poppins(
+                        textStyle: const TextStyle(color: Color(0xFF4F6CAD), fontSize: 17, fontWeight: FontWeight.bold),
+                      )),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (c) => const SignUpScreen()));
+                  },
+                ),
+              ],
             ),
             const SizedBox(
-              height: 30,
+              height: 50,
             ),
             ElevatedButton(
               onPressed: () {
                 validateForm(context);
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.blue[400],
+                primary: const Color(0xFF4F6CAD),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50), // <-- Radius
+                ),
               ),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width * .4,
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: Text(
                   "Login",
-                  style: TextStyle(
-                    fontSize: 20,
+                  style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                      letterSpacing: 1,
+                      fontSize: 20,
+                    ),
                   ),
                 ),
               ),

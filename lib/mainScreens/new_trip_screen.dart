@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:edriver/assistants/assistant_methods.dart';
 import 'package:edriver/global/global.dart';
+import 'package:edriver/mainScreens/chat_screen.dart';
 import 'package:edriver/models/user_ride_request_information.dart';
 import 'package:edriver/widgets/fare_amount_collection_dialog.dart';
 import 'package:edriver/widgets/progress_dialog.dart';
@@ -388,66 +389,102 @@ class _NewTripScreenState extends State<NewTripScreen> {
                 const SizedBox(
                   height: 18,
                 ),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    //driver has arrived at user Pickup Location - Arrived button
-                    if (rideRequestStatus == "accepted") {
-                      rideRequestStatus = "arrived";
-                      FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("status").set(rideRequestStatus);
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          //driver has arrived at user Pickup Location - Arrived button
+                          if (rideRequestStatus == "accepted") {
+                            rideRequestStatus = "arrived";
+                            FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("status").set(rideRequestStatus);
 
-                      setState(() {
-                        buttonTitle = "Start Trip";
-                        buttonColor = Colors.blue;
-                      });
+                            setState(() {
+                              buttonTitle = "Start Trip";
+                              buttonColor = Colors.blue;
+                            });
 
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext c) => ProgressDialog(
-                                message: "Loading...",
-                              ));
-                      await drawPolyLineFromOriginToDestination(
-                        widget.userRideRequestDetails!.originLatLng!,
-                        widget.userRideRequestDetails!.destinationLatLng!,
-                      );
-                      Navigator.pop(context);
-                    }
-                    //driver has started the trip - picked up the user - Start Trip Button
-                    else if (rideRequestStatus == "arrived") {
-                      rideRequestStatus = "ontrip";
-                      FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("status").set(rideRequestStatus);
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext c) => ProgressDialog(
+                                      message: "Loading...",
+                                    ));
+                            await drawPolyLineFromOriginToDestination(
+                              widget.userRideRequestDetails!.originLatLng!,
+                              widget.userRideRequestDetails!.destinationLatLng!,
+                            );
+                            Navigator.pop(context);
+                          }
+                          //driver has started the trip - picked up the user - Start Trip Button
+                          else if (rideRequestStatus == "arrived") {
+                            rideRequestStatus = "ontrip";
+                            FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("status").set(rideRequestStatus);
 
-                      setState(() {
-                        buttonTitle = "End Trip";
-                        buttonColor = Colors.red;
-                      });
-                    }
-                    //if user has reached to the destination/ drop-off location - End Trip
-                    else if (rideRequestStatus == "ontrip") {
-                      endTripNow();
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.directions_car,
-                    color: Colors.white70,
-                    size: 25,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    primary: buttonColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50), // <-- Radius
-                    ),
-                  ),
-                  label: Text(
-                    buttonTitle!.toUpperCase(),
-                    style: GoogleFonts.poppins(
-                      textStyle: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                            setState(() {
+                              buttonTitle = "End Trip";
+                              buttonColor = Colors.red;
+                            });
+                          }
+                          //if user has reached to the destination/ drop-off location - End Trip
+                          else if (rideRequestStatus == "ontrip") {
+                            endTripNow();
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.directions_car,
+                          color: Colors.white,
+                          size: 25,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          primary: buttonColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50), // <-- Radius
+                          ),
+                        ),
+                        label: Text(
+                          buttonTitle!.toUpperCase(),
+                          style: GoogleFonts.poppins(
+                            textStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 10),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (builder) => ChatScreen(userRideRequestDetails: widget.userRideRequestDetails!)));
+                        },
+                        icon: const Icon(
+                          Icons.chat_rounded,
+                          color: Colors.white,
+                          size: 25,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          primary: Colors.blueAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50), // <-- Radius
+                          ),
+                        ),
+                        label: Text(
+                          "Chat",
+                          style: GoogleFonts.poppins(
+                            textStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
