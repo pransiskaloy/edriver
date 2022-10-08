@@ -1,10 +1,14 @@
 import 'package:edriver/assistants/assistant_methods.dart';
 import 'package:edriver/global/global.dart';
+import 'package:edriver/infoHandler/app_info.dart';
+import 'package:edriver/models/message.dart';
 import 'package:edriver/models/user_ride_request_information.dart';
+import 'package:edriver/widgets/message_bubble.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   UserRideRequestInformation? userRideRequestDetails;
@@ -18,6 +22,11 @@ class _ChatScreenState extends State<ChatScreen> {
   final fb = FirebaseDatabase.instance;
   DatabaseReference? referenceChatMessage;
   TextEditingController messageTextEditingController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  _scrollToBottom() {
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  }
 
   saveChatMessage() {
     if (messageTextEditingController.text.toString() != "") {
@@ -27,16 +36,21 @@ class _ChatScreenState extends State<ChatScreen> {
         "textMessage": messageTextEditingController.text.toString(),
         "time": DateTime.now().toString(),
       };
-      referenceChatMessage!.set(chatMessageMap).asStream();
-      messageTextEditingController.clear();
-      var controller = PrimaryScrollController.of(context);
-      controller!.animateTo(controller.position.maxScrollExtent, duration: const Duration(seconds: 1), curve: Curves.ease);
+      setState(() {
+        referenceChatMessage!.set(chatMessageMap).asStream();
+        messageTextEditingController.clear();
+        _scrollToBottom();
+        // var controller = PrimaryScrollController.of(context);
+        // controller!.animateTo(controller.position.minScrollExtent, duration: const Duration(seconds: 3), curve: Curves.ease);
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final ref = fb.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("chats");
+    WidgetsBinding.instance?.addPostFrameCallback((_) => _scrollToBottom());
+    // var controller = PrimaryScrollController.of(context);
+    var ref = fb.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("chats");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -55,45 +69,109 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Stack(
         children: [
           Positioned(
-            child: FirebaseAnimatedList(
-              primary: true,
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 80),
-              query: ref,
-              sort: (a, b) {
-                return (a.value as Map)['time'].toString().toLowerCase().compareTo((b.value as Map)['time'].toString().toLowerCase());
-              },
-              reverse: false,
-              shrinkWrap: true,
-              itemBuilder: (context, snapshot, animation, index) {
-                return Expanded(
-                  child: Container(
-                    margin: (snapshot.value as Map)["senderId"].toString() == fAuth.currentUser!.uid ? const EdgeInsets.only(top: 20, left: 120, right: 15) : const EdgeInsets.only(top: 20, left: 15, right: 120),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    decoration: BoxDecoration(
-                      color: (snapshot.value as Map)["senderId"].toString() == fAuth.currentUser!.uid ? Colors.blue : Colors.grey,
-                      borderRadius: (snapshot.value as Map)["senderId"].toString() == fAuth.currentUser!.uid
-                          ? const BorderRadius.only(topRight: Radius.circular(15), topLeft: Radius.circular(15), bottomLeft: Radius.circular(15))
-                          : const BorderRadius.only(topRight: Radius.circular(15), topLeft: Radius.circular(15), bottomRight: Radius.circular(15)),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          spreadRadius: 1,
-                          blurRadius: 9.0,
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      (snapshot.value as Map)["textMessage"].toString(),
-                      textAlign: TextAlign.justify,
-                      style: GoogleFonts.poppins(
-                        textStyle: const TextStyle(fontSize: 20, color: Colors.white),
+            child: StreamBuilder(
+              stream: FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("chats").orderByChild('time').onValue,
+              builder: (context, snapshot) {
+                List<ChatMessage> messageList = [];
+                if (snapshot.hasData && snapshot.data != null && (snapshot.data! as DatabaseEvent).snapshot.value != null) {
+                  final myMessages = Map<dynamic, dynamic>.from((snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
+                  myMessages.forEach((key, value) {
+                    final currentMessage = Map<String, dynamic>.from(value);
+                    // currentMessage.entries.toList().sort(((a, b) => a.value['time'].toLowerCase().toString().compareTo(b.value['time'].toLowerCase().toString())));
+                    // controller!.animateTo(controller.position.maxScrollExtent, duration: const Duration(seconds: 1), curve: Curves.ease);
+                    messageList.add(
+                      ChatMessage(
+                        senderId: currentMessage['senderId'],
+                        textMessage: currentMessage['textMessage'],
+                        time: currentMessage['time'],
                       ),
+                    );
+                    messageList.sort((a, b) {
+                      return a.time.toString().toLowerCase().compareTo(b.time.toString().toLowerCase());
+                    });
+                  });
+                  return ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 80),
+                    controller: _scrollController,
+                    reverse: false,
+                    itemCount: messageList.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: messageList[index].senderId == fAuth.currentUser!.uid ? const EdgeInsets.only(top: 20, left: 120, right: 15) : const EdgeInsets.only(top: 20, left: 15, right: 120),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                        decoration: BoxDecoration(
+                          color: messageList[index].senderId == fAuth.currentUser!.uid ? Colors.blue : Colors.grey,
+                          borderRadius: messageList[index].senderId == fAuth.currentUser!.uid
+                              ? const BorderRadius.only(topRight: Radius.circular(15), topLeft: Radius.circular(15), bottomLeft: Radius.circular(15))
+                              : const BorderRadius.only(topRight: Radius.circular(15), topLeft: Radius.circular(15), bottomRight: Radius.circular(15)),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              spreadRadius: 1,
+                              blurRadius: 9.0,
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          messageList[index].textMessage.toString(),
+                          textAlign: TextAlign.justify,
+                          style: GoogleFonts.poppins(
+                            textStyle: const TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } else {
+                  return const Center(
+                    child: Text(
+                      'No Message Found...',
+                      style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w400),
                     ),
-                  ),
-                );
+                  );
+                }
               },
             ),
+            // FirebaseAnimatedList(
+            //   primary: true,
+            //   physics: const BouncingScrollPhysics(),
+            //   padding: const EdgeInsets.only(bottom: 80),
+            //   query: ref,
+            //   sort: (a, b) {
+            //     return (a.value as Map)['time'].toString().toLowerCase().compareTo((b.value as Map)['time'].toString().toLowerCase());
+            //   },
+            //   reverse: false,
+            //   shrinkWrap: true,
+            //   itemBuilder: (context, snapshot, animation, index) {
+            //     return Expanded(
+            //       child: Container(
+            //         margin: (snapshot.value as Map)["senderId"].toString() == fAuth.currentUser!.uid ? const EdgeInsets.only(top: 20, left: 120, right: 15) : const EdgeInsets.only(top: 20, left: 15, right: 120),
+            //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            //         decoration: BoxDecoration(
+            //           color: (snapshot.value as Map)["senderId"].toString() == fAuth.currentUser!.uid ? Colors.blue : Colors.grey,
+            //           borderRadius: (snapshot.value as Map)["senderId"].toString() == fAuth.currentUser!.uid
+            //               ? const BorderRadius.only(topRight: Radius.circular(15), topLeft: Radius.circular(15), bottomLeft: Radius.circular(15))
+            //               : const BorderRadius.only(topRight: Radius.circular(15), topLeft: Radius.circular(15), bottomRight: Radius.circular(15)),
+            //           boxShadow: const [
+            //             BoxShadow(
+            //               color: Colors.black12,
+            //               spreadRadius: 1,
+            //               blurRadius: 9.0,
+            //             ),
+            //           ],
+            //         ),
+            //         child: Text(
+            //           (snapshot.value as Map)["textMessage"].toString(),
+            //           textAlign: TextAlign.justify,
+            //           style: GoogleFonts.poppins(
+            //             textStyle: const TextStyle(fontSize: 20, color: Colors.white),
+            //           ),
+            //         ),
+            //       ),
+            //     );
+            //   },
+            // ),
+            // ),
           ),
           Positioned(
             child: Align(
@@ -141,9 +219,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     const SizedBox(width: 10),
                     GestureDetector(
                       onTap: () {
-                        if (messageTextEditingController.text.toString() != null) {
-                          saveChatMessage();
-                        }
+                        saveChatMessage();
                       },
                       child: Container(
                         height: 40,

@@ -1,4 +1,5 @@
 import 'package:edriver/models/directions.dart';
+import 'package:edriver/models/message.dart';
 import 'package:edriver/models/trips_history_model.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -10,6 +11,7 @@ class AppInfo extends ChangeNotifier {
   String driverAverageRatings = "0";
   List<String> historyTripsKeysList = [];
   List<TripsHistoryModel> allTripsHistoryInformationList = [];
+  List<ChatMessage> allChatMessageList = [];
   List<String> chatKeysList = [];
 
   void updatePickUpLocation(Directions userPickUpAddress) {
@@ -34,6 +36,11 @@ class AppInfo extends ChangeNotifier {
 
   updateOverAllHistoryInformation(TripsHistoryModel eachHistoryTrip) {
     allTripsHistoryInformationList.add(eachHistoryTrip);
+    notifyListeners();
+  }
+
+  updateOverAllChat(ChatMessage chatMessage) {
+    allChatMessageList.add(chatMessage);
     notifyListeners();
   }
 
