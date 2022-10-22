@@ -1,4 +1,5 @@
 import 'package:edriver/global/global.dart';
+import 'package:edriver/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -76,7 +77,7 @@ class _FareAmountCollectionDialogState extends State<FareAmountCollectionDialog>
             ElevatedButton(
               onPressed: () {
                 Future.delayed(const Duration(milliseconds: 2000), () {
-                  SystemNavigator.pop();
+                  MyApp.restartApp(context);
                 });
               },
               style: ElevatedButton.styleFrom(

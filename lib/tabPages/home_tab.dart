@@ -48,10 +48,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
     newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoordinates(driverCurrentPosition!, context);
-
-    AssistantMethods.readDriverRatings(context);
-    AssistantMethods.readDriverEarnings(context);
-    AssistantMethods.readTripKeysForOnlineDriver(context);
   }
 
   readCurrentDriverInformation() async {
@@ -74,6 +70,14 @@ class _HomeTabPageState extends State<HomeTabPage> {
     PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
     pushNotificationSystem.initializeCloudMessaging(context);
     pushNotificationSystem.generateAndGetToken();
+    if (isDriverInfoLoaded == false) {
+      AssistantMethods.readDriverRatings(context);
+      AssistantMethods.readDriverEarnings(context);
+      AssistantMethods.readTripKeysForOnlineDriver(context);
+      setState(() {
+        isDriverInfoLoaded = true;
+      });
+    }
   }
 
   @override

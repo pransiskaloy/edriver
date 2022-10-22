@@ -80,8 +80,8 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
               ),
               child: CircleAvatar(
                 radius: 50,
-                backgroundColor: Colors.brown.shade800,
-                child: const Text('AH'),
+                backgroundColor: Colors.blue.shade200,
+                child: Text(onlineDriverData.name!.toUpperCase().substring(0, 1), style: GoogleFonts.poppins(fontSize: 30, fontWeight: FontWeight.bold)),
               ),
             ),
             const SizedBox(height: 10),
@@ -147,13 +147,33 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
                 ],
               ),
             ),
+            const SizedBox(height: 50),
             ElevatedButton(
               onPressed: () async {
                 // FirebaseDatabase.instance.ref().child("test").set("hello");
                 fAuth.signOut();
                 Navigator.push(context, MaterialPageRoute(builder: (c) => const MySplashScreen()));
               },
-              child: const Text("Logout"),
+              style: ElevatedButton.styleFrom(
+                primary: Color.fromARGB(255, 173, 79, 79),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50), // <-- Radius
+                ),
+              ),
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width * .4,
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Text(
+                  "Logout",
+                  style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                      letterSpacing: 1,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

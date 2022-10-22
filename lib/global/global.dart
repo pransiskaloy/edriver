@@ -20,3 +20,4 @@ String? driverVehicleType = "";
 bool isDriverActive = false;
 String statusText = "Turn Online";
 Color buttonColor = Colors.green;
+bool isDriverInfoLoaded = false;
