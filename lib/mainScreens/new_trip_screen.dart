@@ -562,6 +562,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
       "longitude": driverCurrentPosition!.longitude,
     };
 
+    databaseReference.child("uid").set(widget.userRideRequestDetails!.rideRequestId);
     databaseReference.child("driverLocation").set(driverLocationDataMap);
     databaseReference.child("status").set("accepted");
     databaseReference.child("driverId").set(onlineDriverData.id);
