@@ -3,6 +3,9 @@ import 'package:edriver/assistants/assistant_methods.dart';
 import 'package:edriver/global/global.dart';
 import 'package:edriver/mainScreens/new_trip_screen.dart';
 import 'package:edriver/models/user_ride_request_information.dart';
+import 'package:edriver/splashScreen/splash_screen.dart';
+import 'package:edriver/widgets/progressDialog.dart';
+import 'package:edriver/widgets/trip_declined.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +23,13 @@ class NotificationDialogBox extends StatefulWidget {
 }
 
 class _NotificationDialogBoxState extends State<NotificationDialogBox> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    AssistantMethods.pauseLiveLocationUpdates();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -111,7 +121,8 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                       ),
                       Expanded(
                         child: Text(
-                          widget.userRideRequestDetails?.destinationAddress ?? "",
+                          widget.userRideRequestDetails?.destinationAddress ??
+                              "",
                           style: GoogleFonts.poppins(
                             textStyle: const TextStyle(
                               color: Color(0xFF4F6CAD),
@@ -136,7 +147,8 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                   height: 5,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10),
+                  padding: const EdgeInsets.only(
+                      left: 20.0, right: 20.0, bottom: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -146,22 +158,46 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                           audioPlayer.stop();
                           audioPlayer = AssetsAudioPlayer();
 
-                          FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).remove().then((snap) {
-                            FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideStatus").set("idle");
-                            FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideRequest").set("idle");
+                          FirebaseDatabase.instance
+                              .ref()
+                              .child("All Ride Request")
+                              .child(
+                                  widget.userRideRequestDetails!.rideRequestId!)
+                              .remove()
+                              .then((snap) {
+                            FirebaseDatabase.instance
+                                .ref()
+                                .child("drivers")
+                                .child(currentFirebaseUser!.uid)
+                                .child("newRideStatus")
+                                .set("idle");
+                            FirebaseDatabase.instance
+                                .ref()
+                                .child("drivers")
+                                .child(currentFirebaseUser!.uid)
+                                .child("newRideRequest")
+                                .set("idle");
                           }).then((value) {
-                            FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("trip_history").child(widget.userRideRequestDetails!.rideRequestId!).remove();
+                            FirebaseDatabase.instance
+                                .ref()
+                                .child("drivers")
+                                .child(currentFirebaseUser!.uid)
+                                .child("trip_history")
+                                .child(widget
+                                    .userRideRequestDetails!.rideRequestId!)
+                                .remove();
                           }).then((value) {
-                            Fluttertoast.showToast(msg: "Ride request has been canceled!");
+                            Fluttertoast.showToast(
+                                msg: "Ride request has been canceled!");
                           });
-                          SystemNavigator.pop();
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.white,
                           elevation: 0,
                           side: const BorderSide(width: 1, color: Colors.red),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50), // <-- Radius
+                            borderRadius:
+                                BorderRadius.circular(50), // <-- Radius
                           ),
                         ),
                         child: Text(
@@ -187,7 +223,8 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                           primary: Colors.green,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50), // <-- Radius
+                            borderRadius:
+                                BorderRadius.circular(50), // <-- Radius
                           ),
                         ),
                         child: Text(
@@ -211,22 +248,107 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
     );
   }
 
-  acceptRideRequest(BuildContext context) {
+  void acceptRideRequest(BuildContext context) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) =>
+            ProgressDialog(status: 'Accepting Trip...'));
     String getRideRequestId = "";
-    FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideStatus").once().then((snap) {
+    String uid = currentFirebaseUser!.uid;
+    DatabaseReference newTripref =
+        FirebaseDatabase.instance.ref('drivers/$uid/newRideRequest');
+
+    newTripref.once().then((snap) async {
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+      String thisTripID = '';
       if (snap.snapshot.value != null) {
-        getRideRequestId = snap.snapshot.value.toString();
+        thisTripID = snap.snapshot.value.toString();
       } else {
-        Fluttertoast.showToast(msg: "Ride Request was canceled!");
+        audioPlayer.pause();
+        audioPlayer.stop();
+        audioPlayer = AssetsAudioPlayer();
+        var response = await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) => TripDecline(
+                  title: 'Trip Notification',
+                  description: 'Trip ID not found',
+                  respo: 'notfound',
+                ));
+        if (response == 'notfound') {
+          newTripref.set('idle');
+          AssistantMethods.resumeLiveLocationUpdates();
+        }
       }
 
-      if (getRideRequestId == widget.userRideRequestDetails!.rideRequestId) {
-        FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideRequest").set("accepted");
+      //CHECKING TRIP STATUS----------------->
+      //if Trip has been accepted
+      if (thisTripID == widget.userRideRequestDetails!.rideRequestId) {
+        audioPlayer.pause();
+        audioPlayer.stop();
+        audioPlayer = AssetsAudioPlayer();
+        newTripref.set('accepted');
+        print("Trip Accepted");
         AssistantMethods.pauseLiveLocationUpdates();
-        //proceed to trip screen when the driver accepts the ride request
-        Navigator.push(context, MaterialPageRoute(builder: (c) => NewTripScreen(userRideRequestDetails: widget.userRideRequestDetails)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (c) => NewTripScreen(
+                    userRideRequestDetails: widget.userRideRequestDetails)));
+        //if trip has been cancled
+      } else if (thisTripID == 'Canceled') {
+        audioPlayer.pause();
+        audioPlayer.stop();
+        audioPlayer = AssetsAudioPlayer();
+        var response = await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) => TripDecline(
+                  title: 'Trip Notification',
+                  description: 'Trip Request has been canceled',
+                  respo: 'canceledout',
+                ));
+        if (response == 'canceledout') {
+          newTripref.set('waiting');
+          AssistantMethods.resumeLiveLocationUpdates();
+        }
+        // if trip has timed out
+      } else if (thisTripID == 'timeout') {
+        audioPlayer.pause();
+        audioPlayer.stop();
+        audioPlayer = AssetsAudioPlayer();
+        var response = await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) => TripDecline(
+                  title: 'Trip Notification',
+                  description: 'Trip Request timed out',
+                  respo: 'timedout',
+                ));
+        if (response == 'timedout') {
+          Navigator.of(context).pop();
+          Navigator.push(
+              context, MaterialPageRoute(builder: (c) => MySplashScreen()));
+        }
+        // if trip not found
       } else {
-        Fluttertoast.showToast(msg: "Ride Request was canceled!");
+        audioPlayer.pause();
+        audioPlayer.stop();
+        audioPlayer = AssetsAudioPlayer();
+        var response = await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) => TripDecline(
+                  title: 'Trip Notification',
+                  description: 'Trip ID not found',
+                  respo: 'notfound',
+                ));
+        if (response == 'notfound') {
+          newTripref.set('waiting');
+          AssistantMethods.resumeLiveLocationUpdates();
+        }
       }
     });
   }
