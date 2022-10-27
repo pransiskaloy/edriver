@@ -48,6 +48,7 @@ dependencies:
   google_fonts: ^3.0.1
   assets_audio_player: ^3.0.4+1
   smooth_star_rating_nsafe: ^1.0.0+1
+  image_picker: ^0.8.6
 
 dev_dependencies:
   flutter_test:
