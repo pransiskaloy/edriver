@@ -1,4 +1,5 @@
 import 'package:edriver/authentication/signup_screen.dart';
+import 'package:edriver/main.dart';
 import 'package:edriver/splashScreen/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -19,7 +20,8 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordTextEditingController = TextEditingController();
 
   validateForm(BuildContext context) {
-    if (!emailTextEditingController.text.contains("@") || !emailTextEditingController.text.contains(".")) {
+    if (!emailTextEditingController.text.contains("@") ||
+        !emailTextEditingController.text.contains(".")) {
       showToaster(context, "Please enter a valid email", 'fail');
     } else if (passwordTextEditingController.text.isNotEmpty) {
       if (passwordTextEditingController.text.length < 6) {
@@ -54,16 +56,19 @@ class _LoginScreenState extends State<LoginScreen> {
     }))
         .user;
     if (firebaseUser != null) {
-      DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
+      DatabaseReference driversRef =
+          FirebaseDatabase.instance.ref().child("drivers");
       driversRef.child(firebaseUser.uid).once().then((driverKey) {
         final snap = driverKey.snapshot;
         if (snap.value != null) {
           currentFirebaseUser = firebaseUser;
-          Navigator.push(context, MaterialPageRoute(builder: (c) => const MySplashScreen()));
+
+          MyApp.restartApp(context);
         } else {
           fAuth.signOut();
           showToaster(context, "No record exist with this credential.", "fail");
-          Navigator.push(context, MaterialPageRoute(builder: (c) => const LoginScreen()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (c) => const LoginScreen()));
         }
       });
     } else {
@@ -79,9 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackBar(
         content: Text(
           str,
-          style: status == "success" ? const TextStyle(color: Colors.green, fontSize: 15) : const TextStyle(color: Colors.red, fontSize: 15),
+          style: status == "success"
+              ? const TextStyle(color: Colors.green, fontSize: 15)
+              : const TextStyle(color: Colors.red, fontSize: 15),
         ),
-        action: SnackBarAction(label: 'Close', onPressed: scaffold.hideCurrentSnackBar),
+        action: SnackBarAction(
+            label: 'Close', onPressed: scaffold.hideCurrentSnackBar),
       ),
     );
   }
@@ -99,7 +107,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const Text(
               "Welcome Driver",
-              style: TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: 26,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
             ),
             Padding(
               padding: const EdgeInsets.all(15.0),
@@ -171,7 +182,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(color: Colors.white70, fontSize: 18),
               ),
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (c) => SignUpScreen()));
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (c) => SignUpScreen()));
               },
             ),
             const SizedBox(

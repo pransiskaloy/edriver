@@ -1,5 +1,7 @@
 import 'package:edriver/global/global.dart';
+import 'package:edriver/main.dart';
 import 'package:edriver/mainScreens/home_tab.dart';
+import 'package:edriver/splashScreen/splash_screen.dart';
 import 'package:edriver/widgets/trip_declined.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -175,7 +177,10 @@ class Home extends StatelessWidget {
                         category: 'Log out',
                         color: Colors.white,
                         image: 'images/exit.png',
-                        onTap: () async {},
+                        onTap: () async {
+                          await fAuth.signOut();
+                          MyApp.restartApp(context);
+                        },
                       ),
                     ],
                   ),

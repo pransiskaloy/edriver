@@ -16,8 +16,10 @@ class _MySplashScreenState extends State<MySplashScreen> {
     Timer(const Duration(seconds: 3), () async {
       if (fAuth.currentUser != null) {
         currentFirebaseUser = fAuth.currentUser;
+        Navigator.of(context).pop();
         Navigator.push(context, MaterialPageRoute(builder: (c) => Home()));
       } else {
+        Navigator.of(context).pop();
         Navigator.push(
             context, MaterialPageRoute(builder: (c) => LoginScreen()));
         // send user to home screen
