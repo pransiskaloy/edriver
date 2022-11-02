@@ -1,4 +1,5 @@
 import 'package:edriver/global/global.dart';
+import 'package:edriver/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,10 +9,12 @@ class FareAmountCollectionDialog extends StatefulWidget {
 
   FareAmountCollectionDialog({this.totalFareAmount});
   @override
-  State<FareAmountCollectionDialog> createState() => _FareAmountCollectionDialogState();
+  State<FareAmountCollectionDialog> createState() =>
+      _FareAmountCollectionDialogState();
 }
 
-class _FareAmountCollectionDialogState extends State<FareAmountCollectionDialog> {
+class _FareAmountCollectionDialogState
+    extends State<FareAmountCollectionDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -23,7 +26,8 @@ class _FareAmountCollectionDialogState extends State<FareAmountCollectionDialog>
         margin: const EdgeInsets.all(5),
         height: MediaQuery.of(context).size.height * .40,
         width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6)),
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(6)),
         child: Column(
           children: [
             const SizedBox(
@@ -32,7 +36,10 @@ class _FareAmountCollectionDialogState extends State<FareAmountCollectionDialog>
             Text(
               "Trip Fare Amount ( " + driverVehicleType! + " )",
               style: GoogleFonts.poppins(
-                textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Color(0xFF4F6CAD)),
+                textStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                    color: Color(0xFF4F6CAD)),
               ),
             ),
             const SizedBox(
@@ -76,11 +83,12 @@ class _FareAmountCollectionDialogState extends State<FareAmountCollectionDialog>
             ElevatedButton(
               onPressed: () {
                 Future.delayed(const Duration(milliseconds: 2000), () {
-                  SystemNavigator.pop();
+                  MyApp.restartApp(context);
                 });
               },
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 primary: Colors.blue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50), // <-- Radius
