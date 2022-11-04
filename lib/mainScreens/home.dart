@@ -1,5 +1,8 @@
 import 'package:edriver/global/global.dart';
+import 'package:edriver/main.dart';
 import 'package:edriver/mainScreens/home_tab.dart';
+import 'package:edriver/splashScreen/splash_screen.dart';
+import 'package:edriver/splashScreen/trip_cancelation.dart';
 import 'package:edriver/widgets/trip_declined.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -66,45 +69,64 @@ class Home extends StatelessWidget {
                         color: Colors.white,
                         image: 'images/autonomous-car.png',
                         onTap: () {
-                          DatabaseReference driverStatus =
+                          DatabaseReference uploadImager =
                               FirebaseDatabase.instance.ref(
-                                  'drivers/${currentFirebaseUser!.uid}/status');
-                          driverStatus.once().then((snap) async {
+                                  'drivers/${currentFirebaseUser!.uid}/ImagesUploaded');
+
+                          uploadImager.once().then((snap) async {
                             if (snap.snapshot.value != null) {
                               String status = snap.snapshot.value.toString();
-                              if (status == 'active') {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        HomeTabPage()));
-                              } else if (status == 'forApproval') {
+                              if (status == 'notyet') {
                                 var response = await showDialog(
                                     context: context,
                                     barrierDismissible: false,
                                     builder: (BuildContext context) =>
-                                        TripDecline(
-                                          title: 'Important Notification',
-                                          description:
-                                              'Your Account is currently for approval',
-                                          respo: 'forapproval',
-                                        ));
-                                if (response == 'forapproval') {
-                                  Navigator.of(context).pop();
-                                }
-                              } else if (status == 'Restricted') {
-                                var response = await showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (BuildContext context) =>
-                                        TripDecline(
-                                          title: 'Important Notification',
-                                          description:
-                                              'Your Account is currently for Restricted',
-                                          respo: 'restricted',
-                                        ));
-                                if (response == 'restricted') {
-                                  Navigator.of(context).pop();
-                                }
+                                        TripCancelationDialog());
+                              } else {
+                                DatabaseReference driverStatus =
+                                    FirebaseDatabase.instance.ref(
+                                        'drivers/${currentFirebaseUser!.uid}/status');
+                                driverStatus.once().then((snap) async {
+                                  if (snap.snapshot.value != null) {
+                                    String status =
+                                        snap.snapshot.value.toString();
+                                    if (status == 'active') {
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  HomeTabPage()));
+                                    } else if (status == 'forApproval') {
+                                      var response = await showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (BuildContext context) =>
+                                              TripDecline(
+                                                title: 'Important Notification',
+                                                description:
+                                                    'Your Account is currently for approval',
+                                                respo: 'forapproval',
+                                              ));
+                                      if (response == 'forapproval') {
+                                        Navigator.of(context).pop();
+                                      }
+                                    } else if (status == 'Restricted') {
+                                      var response = await showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (BuildContext context) =>
+                                              TripDecline(
+                                                title: 'Important Notification',
+                                                description:
+                                                    'Your Account is currently for Restricted',
+                                                respo: 'restricted',
+                                              ));
+                                      if (response == 'restricted') {
+                                        Navigator.of(context).pop();
+                                      }
+                                    }
+                                  }
+                                });
                               }
                             }
                           });
@@ -175,7 +197,10 @@ class Home extends StatelessWidget {
                         category: 'Log out',
                         color: Colors.white,
                         image: 'images/exit.png',
-                        onTap: () async {},
+                        onTap: () async {
+                          await fAuth.signOut();
+                          MyApp.restartApp(context);
+                        },
                       ),
                     ],
                   ),

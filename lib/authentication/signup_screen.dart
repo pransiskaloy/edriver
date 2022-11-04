@@ -1,4 +1,6 @@
 import 'package:edriver/authentication/carinfo_screen.dart';
+import 'package:edriver/authentication/images/guideline_dialog.dart';
+import 'package:edriver/authentication/images/uploadPhoto.dart';
 import 'package:edriver/authentication/login_screen.dart';
 import 'package:edriver/global/global.dart';
 import 'package:edriver/widgets/progress_dialog.dart';
@@ -22,9 +24,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   validateForm(BuildContext context) {
     if (nameTextEditingController.text.length < 5) {
       showToaster(context, "Full Name must be at least 5 characters", 'fail');
-    } else if (!emailTextEditingController.text.contains("@") || !emailTextEditingController.text.contains(".")) {
+    } else if (!emailTextEditingController.text.contains("@") ||
+        !emailTextEditingController.text.contains(".")) {
       showToaster(context, "Please enter a valid email", 'fail');
-    } else if (phoneTextEditingController.text.length < 11 || phoneTextEditingController.text.length > 11) {
+    } else if (phoneTextEditingController.text.length < 11 ||
+        phoneTextEditingController.text.length > 11) {
       showToaster(context, "Phone must have 11 digit number", 'fail');
     } else if (passwordTextEditingController.text.length < 6) {
       showToaster(context, "Password must be at least 6 characters", 'fail');
@@ -61,14 +65,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
         "email": emailTextEditingController.text.trim(),
         "password": passwordTextEditingController.text.trim(),
         "date_created": DateTime.now().toString(),
+        "ImagesUploaded": "notyet",
         "status": "active",
       };
-      DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
+      DatabaseReference driversRef =
+          FirebaseDatabase.instance.ref().child("drivers");
       driversRef.child(firebaseUser.uid).set(driverMap);
 
       currentFirebaseUser = firebaseUser;
       showToaster(context, "Account has been created.", "success");
-      Navigator.push(context, MaterialPageRoute(builder: (c) => CarInfoScreen()));
+      var result = await showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) => GuideDialog());
+      if (result == 'proceedna') {
+        Navigator.of(context).pop();
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (BuildContext context) => UploadSelfPhoto()));
+      }
     } else {
       Navigator.pop(context);
       showToaster(context, "Account has not been Created.", "fail");
@@ -82,9 +96,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       SnackBar(
         content: Text(
           str,
-          style: status == "success" ? const TextStyle(color: Colors.green, fontSize: 15) : const TextStyle(color: Colors.red, fontSize: 15),
+          style: status == "success"
+              ? const TextStyle(color: Colors.green, fontSize: 15)
+              : const TextStyle(color: Colors.red, fontSize: 15),
         ),
-        action: SnackBarAction(label: 'Close', onPressed: scaffold.hideCurrentSnackBar),
+        action: SnackBarAction(
+            label: 'Close', onPressed: scaffold.hideCurrentSnackBar),
       ),
     );
   }
@@ -107,10 +124,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const Text(
                 "Register as Driver",
-                style: TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 26,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0, vertical: 10.0),
                 child: TextField(
                   controller: nameTextEditingController,
                   style: const TextStyle(
@@ -139,7 +160,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0, vertical: 10.0),
                 child: TextField(
                   controller: emailTextEditingController,
                   keyboardType: TextInputType.emailAddress,
@@ -169,7 +191,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0, vertical: 10.0),
                 child: TextField(
                   keyboardType: TextInputType.phone,
                   controller: phoneTextEditingController,
@@ -199,7 +222,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0, vertical: 10.0),
                 child: TextField(
                   controller: passwordTextEditingController,
                   keyboardType: TextInputType.text,
@@ -238,7 +262,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: TextStyle(color: Colors.white70, fontSize: 18),
                 ),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (c) => LoginScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (c) => LoginScreen()));
                 },
               ),
               ElevatedButton(
@@ -250,7 +275,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   primary: Colors.blue[400],
                 ),
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+                  padding:
+                      EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
                   child: Text(
                     "Next",
                     style: TextStyle(

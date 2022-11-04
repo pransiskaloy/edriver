@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:edriver/authentication/images/uploadPhoto.dart';
 import 'package:edriver/authentication/login_screen.dart';
 import 'package:edriver/global/global.dart';
 import 'package:edriver/mainScreens/home.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class MySplashScreen extends StatefulWidget {
@@ -16,8 +18,10 @@ class _MySplashScreenState extends State<MySplashScreen> {
     Timer(const Duration(seconds: 3), () async {
       if (fAuth.currentUser != null) {
         currentFirebaseUser = fAuth.currentUser;
+        Navigator.of(context).pop();
         Navigator.push(context, MaterialPageRoute(builder: (c) => Home()));
       } else {
+        Navigator.of(context).pop();
         Navigator.push(
             context, MaterialPageRoute(builder: (c) => LoginScreen()));
         // send user to home screen

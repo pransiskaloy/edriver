@@ -1,6 +1,7 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:edriver/assistants/assistant_methods.dart';
 import 'package:edriver/global/global.dart';
+import 'package:edriver/main.dart';
 import 'package:edriver/mainScreens/new_trip_screen.dart';
 import 'package:edriver/models/user_ride_request_information.dart';
 import 'package:edriver/splashScreen/splash_screen.dart';
@@ -190,6 +191,8 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                             Fluttertoast.showToast(
                                 msg: "Ride request has been canceled!");
                           });
+                          AssistantMethods.pauseLiveLocationUpdates();
+                          MyApp.restartApp(context);
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.white,

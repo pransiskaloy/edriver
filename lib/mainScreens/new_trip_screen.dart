@@ -1,12 +1,12 @@
 import 'dart:async';
-
 import 'package:edriver/assistants/assistant_methods.dart';
 import 'package:edriver/global/global.dart';
+import 'package:edriver/main.dart';
 import 'package:edriver/models/user_ride_request_information.dart';
+import 'package:edriver/widgets/canceled_trip.dart';
 import 'package:edriver/widgets/fare_amount_collection_dialog.dart';
 import 'package:edriver/widgets/global.dart';
 import 'package:edriver/widgets/progress_dialog.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -35,7 +35,9 @@ class _NewTripScreenState extends State<NewTripScreen> {
   List<LatLng> polylinePositionCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   double mapPadding = 0;
-
+  Timer? timer;
+  int durationCounter = 0;
+  StreamSubscription<DatabaseEvent>? tripSubscription;
   BitmapDescriptor? iconAnimatedMarker;
   var geoLocator = Geolocator();
   Position? onlineDriverCurrentPosition;
@@ -454,6 +456,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
                         buttonTitle = "End Trip";
                         buttonColor = Colors.red;
                       });
+                      startTimer();
                     }
                     //if user has reached to the destination/ drop-off location - End Trip
                     else if (rideRequestStatus == "ontrip") {
@@ -497,6 +500,8 @@ class _NewTripScreenState extends State<NewTripScreen> {
   }
 
   endTripNow() async {
+    timer!.cancel();
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -515,11 +520,10 @@ class _NewTripScreenState extends State<NewTripScreen> {
         await AssistantMethods.obtainOriginToDestinationDirectionDetails(
             currentDriverPositionLatLng,
             widget.userRideRequestDetails!.originLatLng!);
-
     //calculate fare amount
-    double totalFareAmount =
+    int totalFareAmount =
         AssistantMethods.calculateFareAmountFromOriginToDestination(
-            tripDirectionDetails!);
+            tripDirectionDetails!, durationCounter);
 
     Map endTrip = {
       "fare_amount": totalFareAmount,
@@ -565,7 +569,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
     saveFareAmountDriverEarnings(totalFareAmount);
   }
 
-  saveFareAmountDriverEarnings(double totalFareAmount) {
+  saveFareAmountDriverEarnings(int totalFareAmount) {
     FirebaseDatabase.instance
         .ref()
         .child("drivers")
@@ -595,33 +599,67 @@ class _NewTripScreenState extends State<NewTripScreen> {
     });
   }
 
-  saveAssignedDriverDetailToUserRideRequest() {
-    DatabaseReference databaseReference = FirebaseDatabase.instance
+  void saveAssignedDriverDetailToUserRideRequest() {
+    tripRef = FirebaseDatabase.instance
         .ref()
         .child("All Ride Request")
         .child(widget.userRideRequestDetails!.rideRequestId!);
-
     Map driverLocationDataMap = {
       "latitude": driverCurrentPosition!.latitude,
       "longitude": driverCurrentPosition!.longitude,
     };
-
-    databaseReference.child("driverLocation").set(driverLocationDataMap);
-    databaseReference.child("status").set("accepted");
-    databaseReference.child("driverId").set(onlineDriverData.id);
-    databaseReference.child("driverName").set(onlineDriverData.name);
-    databaseReference.child("driverPhone").set(onlineDriverData.phone);
-    databaseReference.child("car_details").set(
-        onlineDriverData.car_color.toString() +
-            " " +
-            onlineDriverData.car_model.toString() +
-            " " +
-            onlineDriverData.car_number.toString());
+    tripRef!.child("driverLocation").set(driverLocationDataMap);
+    tripRef!.child("status").set("accepted");
+    tripRef!.child("driverId").set(onlineDriverData.id);
+    tripRef!.child("driverName").set(onlineDriverData.name);
+    tripRef!.child("driverPhone").set(onlineDriverData.phone);
+    tripRef!.child("car_details").set(onlineDriverData.car_color.toString() +
+        " " +
+        onlineDriverData.car_model.toString() +
+        " " +
+        onlineDriverData.car_number.toString());
 
     saveRideRequestIdToDriverHistory();
+    //Check if User will cancel the trip request
+    tripSubscription = tripRef!.onValue.listen((event) async {
+      //Checking if event is null
+      if (event.snapshot.value == null) {
+        return;
+      }
+      if ((event.snapshot.value as Map)['status'] != null) {
+        setState(() {
+          tripStatus = (event.snapshot.value as Map)['status'];
+        });
+
+        if (tripStatus == 'Canceled') {
+          streamSubscriptionDriverLivePosition!.cancel();
+          streamSubscriptionDriverLivePosition = null;
+
+          var response = await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) => TripCanceled());
+          if (response == 'tripCanceled') {
+            tripRef!.onDisconnect();
+            tripRef = null;
+            tripSubscription!.cancel();
+            tripSubscription = null;
+            MyApp.restartApp(context);
+          }
+        }
+      }
+    });
   }
 
-  saveRideRequestIdToDriverHistory() {
+  //Trip Time Duration
+  void startTimer() {
+    const interval = Duration(seconds: 1);
+    timer = Timer.periodic(interval, (timer) {
+      durationCounter++;
+    });
+  }
+
+  void saveRideRequestIdToDriverHistory() {
     DatabaseReference tripsHistoryRef = FirebaseDatabase.instance
         .ref()
         .child("drivers")

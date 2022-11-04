@@ -12,7 +12,8 @@ class CarInfoScreen extends StatefulWidget {
 
 class _CarInfoScreenState extends State<CarInfoScreen> {
   TextEditingController carModelTextEditingController = TextEditingController();
-  TextEditingController carNumberTextEditingController = TextEditingController();
+  TextEditingController carNumberTextEditingController =
+      TextEditingController();
   TextEditingController carColorTextEditingController = TextEditingController();
 
   List<String> carTypesList = ["Furfetch-x", "Furfetch-go", "Motorcycle"];
@@ -27,12 +28,20 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
       "date_created": DateTime.now().toString(),
       "status": "active",
     };
-
-    DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
-    driversRef.child(currentFirebaseUser!.uid).child("car_details").set(driverCarInfoMap);
+    DatabaseReference imageRef = FirebaseDatabase.instance
+        .ref()
+        .child("drivers/${currentFirebaseUser!.uid}/ImagesUploaded");
+    DatabaseReference driversRef =
+        FirebaseDatabase.instance.ref().child("drivers");
+    imageRef.set('done');
+    driversRef
+        .child(currentFirebaseUser!.uid)
+        .child("car_details")
+        .set(driverCarInfoMap);
     showToaster(context, "Car details has been saved.", "success");
-
-    Navigator.push(context, MaterialPageRoute(builder: (c) => const MySplashScreen()));
+    Navigator.of(context).pop();
+    Navigator.push(
+        context, MaterialPageRoute(builder: (c) => const MySplashScreen()));
   }
 
   void showToaster(BuildContext context, String str, String status) {
@@ -42,9 +51,12 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
       SnackBar(
         content: Text(
           str,
-          style: status == "success" ? const TextStyle(color: Colors.green, fontSize: 15) : const TextStyle(color: Colors.red, fontSize: 15),
+          style: status == "success"
+              ? const TextStyle(color: Colors.green, fontSize: 15)
+              : const TextStyle(color: Colors.red, fontSize: 15),
         ),
-        action: SnackBarAction(label: 'Close', onPressed: scaffold.hideCurrentSnackBar),
+        action: SnackBarAction(
+            label: 'Close', onPressed: scaffold.hideCurrentSnackBar),
       ),
     );
   }
@@ -67,7 +79,10 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
               ),
               const Text(
                 "Car Information",
-                style: TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 26,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
               ),
               Padding(
                 padding: const EdgeInsets.all(15.0),
@@ -207,7 +222,10 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  if (carColorTextEditingController.text.isNotEmpty && carModelTextEditingController.text.isNotEmpty && carNumberTextEditingController.text.isNotEmpty && selectedCarType != null) {
+                  if (carColorTextEditingController.text.isNotEmpty &&
+                      carModelTextEditingController.text.isNotEmpty &&
+                      carNumberTextEditingController.text.isNotEmpty &&
+                      selectedCarType != null) {
                     saveCareInfo();
                   }
                 },
@@ -215,7 +233,8 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                   primary: Colors.blue[400],
                 ),
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+                  padding:
+                      EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
                   child: Text(
                     "Sign Up",
                     style: TextStyle(

@@ -15,18 +15,20 @@ class TransparentButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: 56,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            primary: Colors.transparent,
-            shadowColor: Colors.black),
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+            side: BorderSide(color: color),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.0),
+            ),
+            primary: color,
+            onSurface: color),
         onPressed: press,
         child: Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
-            color: color,
+            color: Colors.black54,
             fontFamily: 'Muli',
           ),
         ),

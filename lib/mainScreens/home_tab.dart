@@ -38,6 +38,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
     super.initState();
     checkIfLocationPermissionAllowed();
     AssistantMethods.readCurrentDriverInformation(context);
+    PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
+    pushNotificationSystem.generateAndGetToken();
+    pushNotificationSystem.initializeCloudMessaging(context);
   }
 
   @override
