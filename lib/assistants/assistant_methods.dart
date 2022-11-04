@@ -118,29 +118,17 @@ class AssistantMethods {
         driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
   }
 
-  static double calculateFareAmountFromOriginToDestination(
-      DirectionDetailsInfo directionDetailsInfo) {
-    double timeTraveledFarePerMinute =
-        (directionDetailsInfo.duration_value! / 60) *
-            0.1; //0.1 is dollar charge per minute
-    double distanceTraveledFarePerKilometer =
-        (directionDetailsInfo.duration_value! / 1000) *
-            0.1; //0.1 is dollar charge per minute
+  static int calculateFareAmountFromOriginToDestination(
+      DirectionDetailsInfo directionDetailsInfo, int durationValue) {
+    //base Fare
+    double baseFare = 40;
+    //fare Per Km php 3
+    double perKm = (directionDetailsInfo.distance_value! / 100) * 3;
+    //fare per min 2
+    double perMin = (durationValue / 60) * 2;
 
-    //1 USD = 54 Pesos
-    double totalFareAmount =
-        timeTraveledFarePerMinute + distanceTraveledFarePerKilometer;
-    double localCurrencyTotalFare = totalFareAmount * 40;
-
-    double resultFareAmount = 0.0;
-    if (driverVehicleType == "Motorcycle") {
-      resultFareAmount = localCurrencyTotalFare / 2.0;
-    } else if (driverVehicleType == "Furfetch-go") {
-      resultFareAmount = localCurrencyTotalFare;
-    } else if (driverVehicleType == "Furfetch-x") {
-      resultFareAmount = localCurrencyTotalFare * 2.0;
-    }
-    return double.parse(resultFareAmount.toStringAsFixed(1));
+    double totalFare = baseFare + perKm + perMin;
+    return totalFare.truncate();
   }
 
   //retrieve the trip keys

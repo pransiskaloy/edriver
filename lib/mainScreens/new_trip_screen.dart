@@ -35,6 +35,8 @@ class _NewTripScreenState extends State<NewTripScreen> {
   List<LatLng> polylinePositionCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   double mapPadding = 0;
+  Timer? timer;
+  int durationCounter = 0;
   StreamSubscription<DatabaseEvent>? tripSubscription;
   BitmapDescriptor? iconAnimatedMarker;
   var geoLocator = Geolocator();
@@ -454,6 +456,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
                         buttonTitle = "End Trip";
                         buttonColor = Colors.red;
                       });
+                      startTimer();
                     }
                     //if user has reached to the destination/ drop-off location - End Trip
                     else if (rideRequestStatus == "ontrip") {
@@ -497,6 +500,8 @@ class _NewTripScreenState extends State<NewTripScreen> {
   }
 
   endTripNow() async {
+    timer!.cancel();
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -515,11 +520,10 @@ class _NewTripScreenState extends State<NewTripScreen> {
         await AssistantMethods.obtainOriginToDestinationDirectionDetails(
             currentDriverPositionLatLng,
             widget.userRideRequestDetails!.originLatLng!);
-
     //calculate fare amount
-    double totalFareAmount =
+    int totalFareAmount =
         AssistantMethods.calculateFareAmountFromOriginToDestination(
-            tripDirectionDetails!);
+            tripDirectionDetails!, durationCounter);
 
     Map endTrip = {
       "fare_amount": totalFareAmount,
@@ -565,7 +569,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
     saveFareAmountDriverEarnings(totalFareAmount);
   }
 
-  saveFareAmountDriverEarnings(double totalFareAmount) {
+  saveFareAmountDriverEarnings(int totalFareAmount) {
     FirebaseDatabase.instance
         .ref()
         .child("drivers")
@@ -644,6 +648,14 @@ class _NewTripScreenState extends State<NewTripScreen> {
           }
         }
       }
+    });
+  }
+
+  //Trip Time Duration
+  void startTimer() {
+    const interval = Duration(seconds: 1);
+    timer = Timer.periodic(interval, (timer) {
+      durationCounter++;
     });
   }
 

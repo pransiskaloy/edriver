@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:edriver/authentication/images/uploadPhoto.dart';
 import 'package:edriver/authentication/login_screen.dart';
 import 'package:edriver/global/global.dart';
 import 'package:edriver/mainScreens/home.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class MySplashScreen extends StatefulWidget {

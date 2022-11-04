@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FareAmountCollectionDialog extends StatefulWidget {
-  double? totalFareAmount;
+  int? totalFareAmount;
 
   FareAmountCollectionDialog({this.totalFareAmount});
   @override

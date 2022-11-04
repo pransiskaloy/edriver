@@ -1,17 +1,21 @@
 import 'dart:io';
-import 'package:edriver/authentication/images/liscense_photo.dart';
+
+import 'package:edriver/authentication/images/image_w_liscense.dart';
 import 'package:edriver/global/global.dart';
-import 'package:edriver/widgets/progress_dialog.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
-class UploadSelfPhoto extends StatefulWidget {
+import '../../widgets/progress_dialog.dart';
+
+class CarPhoto extends StatefulWidget {
+  const CarPhoto({Key? key}) : super(key: key);
+
   @override
-  _UploadSelfPhotoState createState() => _UploadSelfPhotoState();
+  State<CarPhoto> createState() => _CarPhotoState();
 }
 
-class _UploadSelfPhotoState extends State<UploadSelfPhoto> {
+class _CarPhotoState extends State<CarPhoto> {
   String? imageUrl;
   @override
   void initState() {
@@ -26,7 +30,7 @@ class _UploadSelfPhotoState extends State<UploadSelfPhoto> {
         children: [
           const SizedBox(height: 30),
           const Text(
-            "Profile Image",
+            "Car Image",
             style: TextStyle(
               color: Colors.black,
               fontSize: 28,
@@ -82,7 +86,7 @@ class _UploadSelfPhotoState extends State<UploadSelfPhoto> {
                     onPressed: () {
                       Navigator.of(context).pop();
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) => LiscensePhoto()));
+                          builder: (BuildContext context) => ImageWLiscense()));
                     },
                     child: const Text('Proceed'),
                     style: OutlinedButton.styleFrom(
@@ -107,7 +111,7 @@ class _UploadSelfPhotoState extends State<UploadSelfPhoto> {
 
     if (file != null) {
       Reference referenceRoot = FirebaseStorage.instance.ref();
-      Reference referenceDirImage = referenceRoot.child('profileImage');
+      Reference referenceDirImage = referenceRoot.child('carimage');
       Reference referenceUpload = referenceDirImage.child(uid);
       try {
         await referenceUpload.putFile(File(file.path));
