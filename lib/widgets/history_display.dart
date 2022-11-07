@@ -31,6 +31,10 @@ class _HistoryDisplayState extends State<HistoryDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    print('===================================================================tripHistory');
+    print(widget.tripHistoryModel!.userName!);
+    print(widget.tripHistoryModel!.userName!);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       margin: const EdgeInsets.only(left: 10, right: 10, bottom: 20),

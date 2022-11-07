@@ -27,9 +27,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
   GoogleMapController? newGoogleMapController;
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
   bool isStatus = false;
-  String titlestatus = 'OFFLINE';
+  String titlestatus = 'TURN ONLINE';
   String status = '';
-  Color colorstatus = Colors.redAccent.shade400;
+  Color colorstatus = Colors.greenAccent.shade400;
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
 
@@ -70,30 +70,19 @@ class _HomeTabPageState extends State<HomeTabPage> {
               if (isStatus == true) {
                 goOfline();
                 setState(() {
-                  colorstatus = Colors.redAccent.shade200;
-                  titlestatus = 'OFFLINE';
+                  colorstatus = Colors.greenAccent.shade400;
+                  titlestatus = 'TURN ONLINE';
                   isStatus = false;
                 });
                 Navigator.of(context).pop();
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => MySplashScreen()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => MySplashScreen()));
               } else {
                 Navigator.of(context).pop();
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => MySplashScreen()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => MySplashScreen()));
               }
             },
             child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: const [
-                    BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 5.0,
-                        spreadRadius: 0.5,
-                        offset: Offset(0.7, 0.7))
-                  ]),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5.0, spreadRadius: 0.5, offset: Offset(0.7, 0.7))]),
               child: const CircleAvatar(
                 backgroundColor: Colors.white,
                 radius: 20,
@@ -122,29 +111,25 @@ class _HomeTabPageState extends State<HomeTabPage> {
                       context: context,
                       barrierDismissible: false,
                       builder: (BuildContext context) => ConfirmStatus(
-                            title: (!isStatus) ? 'GO ONLINE' : 'Are You Sure?',
-                            subtitle: (!isStatus)
-                                ? 'You are about to go Online'
-                                : 'You are about to go Offline',
-                            buttonColor: (!isStatus)
-                                ? Colors.greenAccent.shade400
-                                : Colors.redAccent.shade400,
+                            title: (!isStatus) ? 'TURN ONLINE' : 'Are You Sure?',
+                            subtitle: (!isStatus) ? 'You are about to go Online' : 'You are about to go Offline',
+                            buttonColor: (!isStatus) ? Colors.greenAccent.shade400 : Colors.redAccent.shade400,
                             onPressed: () async {
                               if (!isStatus) {
                                 goOnline();
                                 locateDriverPosition();
                                 Navigator.of(context).pop();
                                 setState(() {
-                                  colorstatus = Colors.greenAccent.shade400;
-                                  titlestatus = 'ONLINE';
+                                  colorstatus = Colors.redAccent.shade400;
+                                  titlestatus = 'TURN OFFLINE';
                                   isStatus = true;
                                 });
                               } else {
                                 goOfline();
                                 Navigator.of(context).pop();
                                 setState(() {
-                                  colorstatus = Colors.redAccent.shade400;
-                                  titlestatus = 'OFFLINE';
+                                  colorstatus = Colors.greenAccent.shade400;
+                                  titlestatus = 'TURN ONLINE';
                                   isStatus = false;
                                 });
                               }
@@ -168,24 +153,18 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   void locateDriverPosition() async {
-    Position cPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     driverCurrentPosition = cPosition;
 
-    LatLng latLngPosition = LatLng(
-        driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
-    CameraPosition cameraPosition =
-        CameraPosition(target: latLngPosition, zoom: 14);
+    LatLng latLngPosition = LatLng(driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
+    CameraPosition cameraPosition = CameraPosition(target: latLngPosition, zoom: 14);
 
-    newGoogleMapController!
-        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-    String humanReadableAddress =
-        await AssistantMethods.searchAddressForGeographicCoordinates(
-            driverCurrentPosition!, context);
+    newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoordinates(driverCurrentPosition!, context);
 
     AssistantMethods.readDriverRatings(context);
     AssistantMethods.readDriverEarnings(context);
-    AssistantMethods.readTripKeysForOnlineDriver(context);
+    // AssistantMethods.readTripKeysForOnlineDriver(context);
   }
 
   void goOnline() async {
@@ -202,16 +181,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
       driverCurrentPosition!.longitude,
     );
 
-    DatabaseReference ref = FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(currentFirebaseUser!.uid)
-        .child("newRideStatus");
-    DatabaseReference ref2 = FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(currentFirebaseUser!.uid)
-        .child("newRideRequest");
+    DatabaseReference ref = FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideStatus");
+    DatabaseReference ref2 = FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideRequest");
 
     ref.set("idle"); //searching for ride request
     ref.onValue.listen((event) {});
@@ -220,8 +191,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   void updateDriversLocationAtRealTime() {
-    streamSubscriptionPosition =
-        Geolocator.getPositionStream().listen((Position position) {
+    streamSubscriptionPosition = Geolocator.getPositionStream().listen((Position position) {
       driverCurrentPosition = position;
 
       if (isDriverActive == true) {
@@ -243,16 +213,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
   void goOfline() {
     Geofire.removeLocation(currentFirebaseUser!.uid);
 
-    DatabaseReference? ref = FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(currentFirebaseUser!.uid)
-        .child("newRideStatus");
-    DatabaseReference? ref2 = FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(currentFirebaseUser!.uid)
-        .child("newRideRequest");
+    DatabaseReference? ref = FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideStatus");
+    DatabaseReference? ref2 = FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideRequest");
 
     ref.onDisconnect();
     ref.remove();

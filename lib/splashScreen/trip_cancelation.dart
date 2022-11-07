@@ -4,6 +4,7 @@ import 'package:edriver/splashScreen/splash_screen.dart';
 import 'package:edriver/widgets/TaxiOutlineButton%20copy.dart';
 import 'package:edriver/widgets/trans_button.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TripCancelationDialog extends StatelessWidget {
   @override
@@ -40,11 +41,12 @@ class TripCancelationDialog extends StatelessWidget {
                 const SizedBox(
                   height: 25,
                 ),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    'Your Account is not yet finishid Creating.\n Do you wish to continue?',
+                    'Your have not registered your Account completely.\n Do you wish to continue?',
                     textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(textStyle: TextStyle(fontSize: 18)),
                   ),
                 ),
                 const SizedBox(
@@ -52,16 +54,32 @@ class TripCancelationDialog extends StatelessWidget {
                 ),
                 SizedBox(
                   width: 200,
-                  child: TaxiOutlineButton(
-                    title: 'Proceed',
-                    color: Colors.grey.shade400,
+                  child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                       Navigator.of(context).pop();
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              UploadSelfPhoto()));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UploadSelfPhoto()));
                     },
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color(0xFF4F6CAD),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50), // <-- Radius
+                      ),
+                    ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width * .4,
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Text(
+                        "Proceed",
+                        style: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
+                            letterSpacing: 1,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(
@@ -76,8 +94,7 @@ class TripCancelationDialog extends StatelessWidget {
                       await fAuth.signOut();
                       Navigator.of(context).pop();
                       Navigator.of(context).pop();
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) => MySplashScreen()));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => MySplashScreen()));
                     },
                   ),
                 ),

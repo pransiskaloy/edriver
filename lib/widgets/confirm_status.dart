@@ -16,7 +16,7 @@ class ConfirmStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(20.0),
       ),
       elevation: 0.0,
       backgroundColor: Colors.transparent,
@@ -32,10 +32,7 @@ class ConfirmStatus extends StatelessWidget {
             const SizedBox(height: 30),
             Text(
               title,
-              style: const TextStyle(
-                  fontFamily: 'Muli',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800),
+              style: const TextStyle(fontFamily: 'Muli', fontSize: 24, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 30),
             Padding(
@@ -49,8 +46,7 @@ class ConfirmStatus extends StatelessWidget {
                       Expanded(
                         child: Text(
                           subtitle,
-                          style:
-                              const TextStyle(fontFamily: 'Muli', fontSize: 20),
+                          style: const TextStyle(fontFamily: 'Muli', fontSize: 20),
                         ),
                       ),
                     ],
@@ -63,7 +59,7 @@ class ConfirmStatus extends StatelessWidget {
             const Divider(),
             const SizedBox(height: 8),
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -71,7 +67,7 @@ class ConfirmStatus extends StatelessWidget {
                     child: Container(
                       child: TransparentButton(
                         text: 'Cancel',
-                        color: Colors.black,
+                        color: Colors.transparent,
                         press: () {
                           Navigator.of(context).pop();
                         },
@@ -83,11 +79,10 @@ class ConfirmStatus extends StatelessWidget {
                     child: Container(
                       child: SizedBox(
                         width: double.infinity,
-                        height: 56,
+                        height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                             primary: buttonColor,
                           ),
                           onPressed: onPressed,

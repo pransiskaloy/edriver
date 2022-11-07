@@ -1,17 +1,22 @@
 import 'package:edriver/global/global.dart';
 import 'package:edriver/main.dart';
 import 'package:edriver/mainScreens/home_tab.dart';
+import 'package:edriver/mainScreens/trip_history_screen.dart';
 import 'package:edriver/splashScreen/splash_screen.dart';
 import 'package:edriver/splashScreen/trip_cancelation.dart';
 import 'package:edriver/widgets/trip_declined.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import '../assistants/assistant_methods.dart';
+
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    AssistantMethods.readTripKeysForOnlineDriver(context);
+
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.light,
@@ -27,12 +32,8 @@ class Home extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(left: 20),
               child: Text(
-                "Ehatid Driver",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 28,
-                    fontFamily: 'Muli'),
+                "ehatid Driver",
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 28, fontFamily: 'Muli'),
               ),
             ),
             const SizedBox(height: 10),
@@ -50,10 +51,6 @@ class Home extends StatelessWidget {
                       color: Colors.grey[800],
                     ),
                   ),
-                  Icon(
-                    Icons.more_horiz,
-                    color: Colors.grey[800],
-                  ),
                 ],
               ),
             ),
@@ -67,44 +64,30 @@ class Home extends StatelessWidget {
                       buildPetCategory(
                         category: 'Go Online',
                         color: Colors.white,
-                        image: 'images/autonomous-car.png',
+                        image: 'images/new_trip.png',
                         onTap: () {
-                          DatabaseReference uploadImager =
-                              FirebaseDatabase.instance.ref(
-                                  'drivers/${currentFirebaseUser!.uid}/ImagesUploaded');
+                          DatabaseReference uploadImager = FirebaseDatabase.instance.ref('drivers/${currentFirebaseUser!.uid}/ImagesUploaded');
 
                           uploadImager.once().then((snap) async {
                             if (snap.snapshot.value != null) {
                               String status = snap.snapshot.value.toString();
                               if (status == 'notyet') {
-                                var response = await showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (BuildContext context) =>
-                                        TripCancelationDialog());
+                                var response = await showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => TripCancelationDialog());
                               } else {
-                                DatabaseReference driverStatus =
-                                    FirebaseDatabase.instance.ref(
-                                        'drivers/${currentFirebaseUser!.uid}/status');
+                                DatabaseReference driverStatus = FirebaseDatabase.instance.ref('drivers/${currentFirebaseUser!.uid}/status');
                                 driverStatus.once().then((snap) async {
                                   if (snap.snapshot.value != null) {
-                                    String status =
-                                        snap.snapshot.value.toString();
+                                    String status = snap.snapshot.value.toString();
                                     if (status == 'active') {
                                       Navigator.of(context).pop();
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  HomeTabPage()));
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => HomeTabPage()));
                                     } else if (status == 'forApproval') {
                                       var response = await showDialog(
                                           context: context,
                                           barrierDismissible: false,
-                                          builder: (BuildContext context) =>
-                                              TripDecline(
+                                          builder: (BuildContext context) => TripDecline(
                                                 title: 'Important Notification',
-                                                description:
-                                                    'Your Account is currently for approval',
+                                                description: 'Your Account is currently for approval',
                                                 respo: 'forapproval',
                                               ));
                                       if (response == 'forapproval') {
@@ -114,11 +97,9 @@ class Home extends StatelessWidget {
                                       var response = await showDialog(
                                           context: context,
                                           barrierDismissible: false,
-                                          builder: (BuildContext context) =>
-                                              TripDecline(
+                                          builder: (BuildContext context) => TripDecline(
                                                 title: 'Important Notification',
-                                                description:
-                                                    'Your Account is currently for Restricted',
+                                                description: 'Your Account is currently for Restricted',
                                                 respo: 'restricted',
                                               ));
                                       if (response == 'restricted') {
@@ -135,7 +116,7 @@ class Home extends StatelessWidget {
                       buildPetCategory(
                         category: 'Earnings',
                         color: Colors.white,
-                        image: 'images/earnings.png',
+                        image: 'images/wallet.png',
                         onTap: () {},
                       ),
                     ],
@@ -157,10 +138,6 @@ class Home extends StatelessWidget {
                       color: Colors.grey[800],
                     ),
                   ),
-                  Icon(
-                    Icons.more_horiz,
-                    color: Colors.grey[800],
-                  ),
                 ],
               ),
             ),
@@ -181,18 +158,16 @@ class Home extends StatelessWidget {
                         category: 'Trip Hsitory',
                         color: Colors.white,
                         image: 'images/history.png',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => TripHistoryScreen()));
+                        },
                       ),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      buildPetCategory(
-                          category: 'Support',
-                          color: Colors.white,
-                          image: 'images/customer-service.png',
-                          onTap: () {}),
+                      buildPetCategory(category: 'Support', color: Colors.white, image: 'images/customer-service.png', onTap: () {}),
                       buildPetCategory(
                         category: 'Log out',
                         color: Colors.white,
@@ -213,8 +188,7 @@ class Home extends StatelessWidget {
     );
   }
 
-  Widget buildPetCategory(
-      {String? category, String? image, Color? color, onTap}) {
+  Widget buildPetCategory({String? category, String? image, Color? color, onTap}) {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,

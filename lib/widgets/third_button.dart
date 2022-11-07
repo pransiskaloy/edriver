@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyButton3 extends StatelessWidget {
   final String title;
   final onPressed;
   final Color color;
-  const MyButton3(
-      {required this.title, required this.onPressed, required this.color});
+  const MyButton3({required this.title, required this.onPressed, required this.color});
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -22,8 +22,9 @@ class MyButton3 extends StatelessWidget {
         child: Center(
           child: Text(
             title,
-            style: const TextStyle(
-                fontFamily: 'Muli', fontSize: 20, fontWeight: FontWeight.w900),
+            style: GoogleFonts.poppins(textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1)),
+            // style: const TextStyle(
+            //     fontFamily: 'Muli', fontSize: 20, fontWeight: FontWeight.w900),
           ),
         ),
       ),

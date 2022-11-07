@@ -28,7 +28,7 @@ class GuideDialog extends StatelessWidget {
                 ),
                 const Text(
                   'Important Notice!',
-                  style: TextStyle(fontSize: 22.0, fontFamily: 'Muli'),
+                  style: TextStyle(fontSize: 22.0, fontFamily: 'Muli', fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(
                   height: 25,
@@ -39,7 +39,7 @@ class GuideDialog extends StatelessWidget {
                     'We do not have camera support yet. Make sure you have\n'
                     'these images already taken ready to be uploaded. Make sure it is clear and legit.\n'
                     '-License Image\nImage of Self\nPicture with License\nCar Image',
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.justify,
                     style: TextStyle(fontFamily: 'Muli', fontSize: 18),
                   ),
                 ),
