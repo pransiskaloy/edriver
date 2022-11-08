@@ -37,7 +37,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   void initState() {
     super.initState();
     checkIfLocationPermissionAllowed();
-    AssistantMethods.readCurrentDriverInformation(context);
+    // AssistantMethods.readCurrentDriverInformation(context);
     PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
     pushNotificationSystem.generateAndGetToken();
     pushNotificationSystem.initializeCloudMessaging(context);
@@ -162,8 +162,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
     newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoordinates(driverCurrentPosition!, context);
 
-    AssistantMethods.readDriverRatings(context);
-    AssistantMethods.readDriverEarnings(context);
+    // AssistantMethods.readDriverRatings(context);
+    // AssistantMethods.readDriverEarnings(context);
     // AssistantMethods.readTripKeysForOnlineDriver(context);
   }
 

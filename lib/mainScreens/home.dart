@@ -1,22 +1,36 @@
+import 'package:edriver/assistants/assistant_methods.dart';
 import 'package:edriver/global/global.dart';
 import 'package:edriver/main.dart';
 import 'package:edriver/mainScreens/home_tab.dart';
 import 'package:edriver/mainScreens/trip_history_screen.dart';
 import 'package:edriver/splashScreen/splash_screen.dart';
 import 'package:edriver/splashScreen/trip_cancelation.dart';
+import 'package:edriver/tabPages/earnings_tab.dart';
+import 'package:edriver/tabPages/history_tab.dart';
+import 'package:edriver/tabPages/profile_tab.dart';
 import 'package:edriver/widgets/trip_declined.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-import '../assistants/assistant_methods.dart';
-
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    AssistantMethods.readTripKeysForOnlineDriver(context);
+  State<Home> createState() => _HomeState();
+}
 
+class _HomeState extends State<Home> {
+  @override
+  void initState() {
+    super.initState();
+    AssistantMethods.readCurrentDriverInformation(context);
+    AssistantMethods.readDriverRatings(context);
+    AssistantMethods.readDriverEarnings(context);
+    AssistantMethods.readTripKeysForOnlineDriver(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.light,
@@ -32,7 +46,7 @@ class Home extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(left: 20),
               child: Text(
-                "ehatid Driver",
+                "ehatid driver",
                 style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 28, fontFamily: 'Muli'),
               ),
             ),
@@ -114,10 +128,12 @@ class Home extends StatelessWidget {
                         },
                       ),
                       buildPetCategory(
-                        category: 'Earnings',
+                        category: 'Trip Hsitory',
                         color: Colors.white,
-                        image: 'images/wallet.png',
-                        onTap: () {},
+                        image: 'images/history.png',
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => const RatingsTabPage()));
+                        },
                       ),
                     ],
                   ),
@@ -152,22 +168,16 @@ class Home extends StatelessWidget {
                         category: 'Profile',
                         color: Colors.white,
                         image: 'images/user.png',
-                        onTap: () {},
-                      ),
-                      buildPetCategory(
-                        category: 'Trip Hsitory',
-                        color: Colors.white,
-                        image: 'images/history.png',
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => TripHistoryScreen()));
+                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => ProfileTabPage()));
                         },
                       ),
+                      buildPetCategory(category: 'Support', color: Colors.white, image: 'images/customer-service.png', onTap: () {}),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      buildPetCategory(category: 'Support', color: Colors.white, image: 'images/customer-service.png', onTap: () {}),
                       buildPetCategory(
                         category: 'Log out',
                         color: Colors.white,

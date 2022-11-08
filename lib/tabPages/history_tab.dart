@@ -15,18 +15,22 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded, color: Color(0xFF4F6CAD)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text("Trip History", style: GoogleFonts.poppins(textStyle: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4F6CAD)))),
+        centerTitle: true,
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 40),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, bottom: 10),
-            child: Text(
-              "Trip History",
-              style: GoogleFonts.poppins(
-                textStyle: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFF4F6CAD)),
-              ),
-            ),
+          const SizedBox(
+            height: 10,
           ),
           Center(
             child: Container(
@@ -37,28 +41,28 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
                   colors: [
-                    Colors.blueAccent,
-                    Colors.blue,
+                    Color(0xFFF3F4F6),
+                    Color(0xFFF3F4F6),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(5),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
-                    spreadRadius: 1,
-                    blurRadius: 9.0,
+                    spreadRadius: 0,
+                    blurRadius: 1.0,
                   ),
                 ],
               ),
               child: Column(
                 children: [
                   Text(
-                    "NUMBER OF TRIPS COMPLETED",
-                    style: GoogleFonts.poppins(textStyle: const TextStyle(fontSize: 15, color: Colors.white)),
+                    "TRIPS COMPLETED",
+                    style: GoogleFonts.poppins(textStyle: const TextStyle(fontSize: 25, color: Color(0xFF969B9F))),
                   ),
                   Text(
                     Provider.of<AppInfo>(context, listen: false).allTripsHistoryInformationList.length.toString(),
-                    style: GoogleFonts.poppins(textStyle: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white)),
+                    style: GoogleFonts.poppins(textStyle: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Color(0xFF354859))),
                   ),
                 ],
               ),
@@ -67,13 +71,11 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
           const SizedBox(height: 20),
           Container(
             width: MediaQuery.of(context).size.width,
-            height: 70,
-            color: Colors.lightBlueAccent,
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                "LIST OF HISTORY",
-                style: GoogleFonts.poppins(letterSpacing: 2, textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
+                "Transaction history",
+                style: GoogleFonts.poppins(letterSpacing: 2, textStyle: const TextStyle(fontSize: 20, color: Color(0xFF969B9F))),
               ),
             ),
           ),

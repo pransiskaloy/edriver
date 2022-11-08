@@ -27,7 +27,6 @@ class AppInfo extends ChangeNotifier {
 
   updateOverAllTripsKeys(List<String> tripsKeyList) {
     historyTripsKeysList = tripsKeyList;
-    historyTripsKeysList = tripsKeyList;
     notifyListeners();
   }
 
