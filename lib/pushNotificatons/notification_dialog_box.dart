@@ -161,7 +161,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
 
                           DatabaseReference declineTrip =
                               FirebaseDatabase.instance.ref().child(
-                                  'drivers/${currentFirebaseUser!.uid}newRideRequest');
+                                  'drivers/${currentFirebaseUser!.uid}/newRideRequest');
                           declineTrip.set('canceled');
                           AssistantMethods.pauseLiveLocationUpdates();
                           MyApp.restartApp(context);
