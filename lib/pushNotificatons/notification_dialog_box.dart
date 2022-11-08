@@ -159,38 +159,10 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                           audioPlayer.stop();
                           audioPlayer = AssetsAudioPlayer();
 
-                          FirebaseDatabase.instance
-                              .ref()
-                              .child("All Ride Request")
-                              .child(
-                                  widget.userRideRequestDetails!.rideRequestId!)
-                              .remove()
-                              .then((snap) {
-                            FirebaseDatabase.instance
-                                .ref()
-                                .child("drivers")
-                                .child(currentFirebaseUser!.uid)
-                                .child("newRideStatus")
-                                .set("idle");
-                            FirebaseDatabase.instance
-                                .ref()
-                                .child("drivers")
-                                .child(currentFirebaseUser!.uid)
-                                .child("newRideRequest")
-                                .set("idle");
-                          }).then((value) {
-                            FirebaseDatabase.instance
-                                .ref()
-                                .child("drivers")
-                                .child(currentFirebaseUser!.uid)
-                                .child("trip_history")
-                                .child(widget
-                                    .userRideRequestDetails!.rideRequestId!)
-                                .remove();
-                          }).then((value) {
-                            Fluttertoast.showToast(
-                                msg: "Ride request has been canceled!");
-                          });
+                          DatabaseReference declineTrip =
+                              FirebaseDatabase.instance.ref().child(
+                                  'drivers/${currentFirebaseUser!.uid}newRideRequest');
+                          declineTrip.set('canceled');
                           AssistantMethods.pauseLiveLocationUpdates();
                           MyApp.restartApp(context);
                         },
