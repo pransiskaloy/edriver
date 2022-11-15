@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:edriver/assistants/assistant_methods.dart';
 import 'package:edriver/global/global.dart';
 import 'package:edriver/main.dart';
+import 'package:edriver/mainScreens/chat_screen.dart';
 import 'package:edriver/models/user_ride_request_information.dart';
 import 'package:edriver/widgets/canceled_trip.dart';
 import 'package:edriver/widgets/fare_amount_collection_dialog.dart';
@@ -44,26 +45,21 @@ class _NewTripScreenState extends State<NewTripScreen> {
   String? rideRequestStatus = "accepted";
   String durationFromOriginToDestination = "";
   bool isRequestDirectionDetails = false;
-  Future<void> drawPolyLineFromOriginToDestination(
-      LatLng originLatLng, LatLng destinationLatLng) async {
+  Future<void> drawPolyLineFromOriginToDestination(LatLng originLatLng, LatLng destinationLatLng) async {
     showDialog(
       context: context,
       builder: (BuildContext context) => ProgressDialog(
         message: "Please wait...",
       ),
     );
-    var directionDetailsInfo =
-        await AssistantMethods.obtainOriginToDestinationDirectionDetails(
-            originLatLng, destinationLatLng);
+    var directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatLng, destinationLatLng);
     Navigator.pop(context);
     PolylinePoints polylinePoints = PolylinePoints();
-    List<PointLatLng> decodedPolylinePointsResultList =
-        polylinePoints.decodePolyline(directionDetailsInfo!.e_points!);
+    List<PointLatLng> decodedPolylinePointsResultList = polylinePoints.decodePolyline(directionDetailsInfo!.e_points!);
     polylinePositionCoordinates.clear();
     if (decodedPolylinePointsResultList.isNotEmpty) {
       decodedPolylinePointsResultList.forEach((PointLatLng pointLatLng) {
-        polylinePositionCoordinates
-            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+        polylinePositionCoordinates.add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
       });
     }
     setOfPolyline.clear();
@@ -81,12 +77,9 @@ class _NewTripScreenState extends State<NewTripScreen> {
       setOfPolyline.add(polyline);
     });
     LatLngBounds boundsLatLng;
-    if (originLatLng.latitude > destinationLatLng.latitude &&
-        originLatLng.longitude > destinationLatLng.longitude) {
-      boundsLatLng =
-          LatLngBounds(southwest: destinationLatLng, northeast: originLatLng);
-    } else if (originLatLng.latitude > destinationLatLng.latitude &&
-        originLatLng.longitude > destinationLatLng.longitude) {
+    if (originLatLng.latitude > destinationLatLng.latitude && originLatLng.longitude > destinationLatLng.longitude) {
+      boundsLatLng = LatLngBounds(southwest: destinationLatLng, northeast: originLatLng);
+    } else if (originLatLng.latitude > destinationLatLng.latitude && originLatLng.longitude > destinationLatLng.longitude) {
       boundsLatLng = LatLngBounds(
         southwest: LatLng(originLatLng.latitude, destinationLatLng.longitude),
         northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
@@ -97,11 +90,9 @@ class _NewTripScreenState extends State<NewTripScreen> {
         northeast: LatLng(originLatLng.latitude, destinationLatLng.longitude),
       );
     } else {
-      boundsLatLng =
-          LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
+      boundsLatLng = LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
     }
-    newTripGoogleMapController!
-        .animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 65));
+    newTripGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 65));
     Marker originMarker = Marker(
       markerId: const MarkerId("originID"),
       position: originLatLng,
@@ -116,21 +107,9 @@ class _NewTripScreenState extends State<NewTripScreen> {
       setOfMarkers.add(originMarker);
       setOfMarkers.add(destinationMarker);
     });
-    Circle originCircle = Circle(
-        circleId: const CircleId("originID"),
-        fillColor: Colors.blue,
-        radius: 12,
-        strokeWidth: 2,
-        strokeColor: Colors.white,
-        center: originLatLng);
+    Circle originCircle = Circle(circleId: const CircleId("originID"), fillColor: Colors.blue, radius: 12, strokeWidth: 2, strokeColor: Colors.white, center: originLatLng);
 
-    Circle destinationCircle = Circle(
-        circleId: const CircleId("destinationID"),
-        fillColor: Colors.green,
-        radius: 12,
-        strokeWidth: 2,
-        strokeColor: Colors.white,
-        center: destinationLatLng);
+    Circle destinationCircle = Circle(circleId: const CircleId("destinationID"), fillColor: Colors.green, radius: 12, strokeWidth: 2, strokeColor: Colors.white, center: destinationLatLng);
 
     setState(() {
       setOfCircles.add(originCircle);
@@ -146,10 +125,8 @@ class _NewTripScreenState extends State<NewTripScreen> {
 
   createDriverIconMarker() {
     if (iconAnimatedMarker == null) {
-      ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context, size: const Size(2, 2));
-      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/car.png")
-          .then((value) {
+      ImageConfiguration imageConfiguration = createLocalImageConfiguration(context, size: const Size(2, 2));
+      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/car.png").then((value) {
         iconAnimatedMarker = value;
       });
     }
@@ -158,8 +135,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
   //animating the driver current position until it reached to the users preferred destination
   getDriversLocationUpdatesAtRealTime() {
     LatLng oldLatLng = LatLng(0, 0);
-    streamSubscriptionDriverLivePosition =
-        Geolocator.getPositionStream().listen((Position position) {
+    streamSubscriptionDriverLivePosition = Geolocator.getPositionStream().listen((Position position) {
       driverCurrentPosition = position;
       onlineDriverCurrentPosition = position;
 
@@ -176,12 +152,9 @@ class _NewTripScreenState extends State<NewTripScreen> {
       );
 
       setState(() {
-        CameraPosition cameraPosition =
-            CameraPosition(target: latLngDriverPosition, zoom: 16);
-        newTripGoogleMapController!
-            .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-        setOfMarkers
-            .remove((element) => element.markerId.value == "AnimatedMarker");
+        CameraPosition cameraPosition = CameraPosition(target: latLngDriverPosition, zoom: 16);
+        newTripGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+        setOfMarkers.remove((element) => element.markerId.value == "AnimatedMarker");
         setOfMarkers.add(animatingMarker);
       });
 
@@ -194,12 +167,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
         "longitude": onlineDriverCurrentPosition!.longitude,
       };
 
-      FirebaseDatabase.instance
-          .ref()
-          .child("All Ride Request")
-          .child(widget.userRideRequestDetails!.rideRequestId!)
-          .child("driverLocation")
-          .set(driverLatLngDataMap);
+      FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("driverLocation").set(driverLatLngDataMap);
     });
   }
 
@@ -217,17 +185,13 @@ class _NewTripScreenState extends State<NewTripScreen> {
       ); //driver current location
       if (rideRequestStatus == "accepted") {
         //if the driver accepted the request
-        destinationLatLng =
-            widget.userRideRequestDetails!.originLatLng; //user pick up location
+        destinationLatLng = widget.userRideRequestDetails!.originLatLng; //user pick up location
       } else {
         //if the driver arrived to user origin location
-        destinationLatLng = widget.userRideRequestDetails!
-            .destinationLatLng; // user drop-off location
+        destinationLatLng = widget.userRideRequestDetails!.destinationLatLng; // user drop-off location
       }
 
-      var directionInformation =
-          await AssistantMethods.obtainOriginToDestinationDirectionDetails(
-              originLatLng, destinationLatLng);
+      var directionInformation = await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatLng, destinationLatLng);
 
       if (directionInformation != null) {
         setState(() {
@@ -267,8 +231,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
             );
 
             var userCurrentLatLng = widget.userRideRequestDetails!.originLatLng;
-            drawPolyLineFromOriginToDestination(
-                driverCurrentLatLng, userCurrentLatLng!);
+            drawPolyLineFromOriginToDestination(driverCurrentLatLng, userCurrentLatLng!);
             getDriversLocationUpdatesAtRealTime();
           },
         ),
@@ -331,10 +294,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
                       width: 10,
                     ),
                     Text(
-                      widget.userRideRequestDetails?.userName
-                              .toString()
-                              .toUpperCase() ??
-                          "",
+                      widget.userRideRequestDetails?.userName.toString().toUpperCase() ?? "",
                       style: GoogleFonts.poppins(
                         textStyle: const TextStyle(
                           fontSize: 16,
@@ -413,83 +373,101 @@ class _NewTripScreenState extends State<NewTripScreen> {
                 const SizedBox(
                   height: 18,
                 ),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    //driver has arrived at user Pickup Location - Arrived button
-                    if (rideRequestStatus == "accepted") {
-                      rideRequestStatus = "arrived";
-                      FirebaseDatabase.instance
-                          .ref()
-                          .child("All Ride Request")
-                          .child(widget.userRideRequestDetails!.rideRequestId!)
-                          .child("status")
-                          .set(rideRequestStatus);
+                Row(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        //driver has arrived at user Pickup Location - Arrived button
+                        if (rideRequestStatus == "accepted") {
+                          rideRequestStatus = "arrived";
+                          FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("status").set(rideRequestStatus);
 
-                      setState(() {
-                        buttonTitle = "Start Trip";
-                        buttonColor = Colors.blue;
-                      });
+                          setState(() {
+                            buttonTitle = "Start Trip";
+                            buttonColor = Colors.blue;
+                          });
 
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext c) => ProgressDialog(
-                                message: "Loading...",
-                              ));
-                      await drawPolyLineFromOriginToDestination(
-                        widget.userRideRequestDetails!.originLatLng!,
-                        widget.userRideRequestDetails!.destinationLatLng!,
-                      );
-                      Navigator.pop(context);
-                    }
-                    //driver has started the trip - picked up the user - Start Trip Button
-                    else if (rideRequestStatus == "arrived") {
-                      rideRequestStatus = "ontrip";
-                      FirebaseDatabase.instance
-                          .ref()
-                          .child("All Ride Request")
-                          .child(widget.userRideRequestDetails!.rideRequestId!)
-                          .child("status")
-                          .set(rideRequestStatus);
+                          showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext c) => ProgressDialog(
+                                    message: "Loading...",
+                                  ));
+                          await drawPolyLineFromOriginToDestination(
+                            widget.userRideRequestDetails!.originLatLng!,
+                            widget.userRideRequestDetails!.destinationLatLng!,
+                          );
+                          Navigator.pop(context);
+                        }
+                        //driver has started the trip - picked up the user - Start Trip Button
+                        else if (rideRequestStatus == "arrived") {
+                          rideRequestStatus = "ontrip";
+                          FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("status").set(rideRequestStatus);
+                          FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("pick_up_time").set(DateTime.now().toString());
 
-                      setState(() {
-                        buttonTitle = "End Trip";
-                        buttonColor = Colors.red;
-                      });
-                      startTimer();
-                    }
-                    //if user has reached to the destination/ drop-off location - End Trip
-                    else if (rideRequestStatus == "ontrip") {
-                      endTripNow();
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.directions_car,
-                    color: Colors.white70,
-                    size: 25,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
-                    primary: buttonColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50), // <-- Radius
-                    ),
-                  ),
-                  label: Text(
-                    buttonTitle!.toUpperCase(),
-                    style: GoogleFonts.poppins(
-                      textStyle: const TextStyle(
+                          setState(() {
+                            buttonTitle = "End Trip";
+                            buttonColor = Colors.red;
+                          });
+                          startTimer();
+                        }
+                        //if user has reached to the destination/ drop-off location - End Trip
+                        else if (rideRequestStatus == "ontrip") {
+                          endTripNow();
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.directions_car,
                         color: Colors.white70,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        size: 25,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        primary: buttonColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50), // <-- Radius
+                        ),
+                      ),
+                      label: Text(
+                        buttonTitle!.toUpperCase(),
+                        style: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-
-                const SizedBox(
-                  height: 20,
+                    const Spacer(),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (builder) => ChatScreen(userRideRequestDetails: widget.userRideRequestDetails!)));
+                      },
+                      icon: const Icon(
+                        Icons.chat_rounded,
+                        color: Colors.white,
+                        size: 25,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        primary: Colors.blueAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50), // <-- Radius
+                        ),
+                      ),
+                      label: Text(
+                        "Chat",
+                        style: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -516,43 +494,15 @@ class _NewTripScreenState extends State<NewTripScreen> {
       onlineDriverCurrentPosition!.longitude,
     );
 
-    var tripDirectionDetails =
-        await AssistantMethods.obtainOriginToDestinationDirectionDetails(
-            currentDriverPositionLatLng,
-            widget.userRideRequestDetails!.originLatLng!);
+    var tripDirectionDetails = await AssistantMethods.obtainOriginToDestinationDirectionDetails(currentDriverPositionLatLng, widget.userRideRequestDetails!.originLatLng!);
     //calculate fare amount
-    int totalFareAmount =
-        AssistantMethods.calculateFareAmountFromOriginToDestination(
-            tripDirectionDetails!, durationCounter);
+    int totalFareAmount = AssistantMethods.calculateFareAmountFromOriginToDestination(tripDirectionDetails!, durationCounter);
 
-    Map endTrip = {
-      "fare_amount": totalFareAmount,
-      "end_trip_time": DateTime.now().toString()
-    };
-    FirebaseDatabase.instance
-        .ref()
-        .child("All Ride Request")
-        .child(widget.userRideRequestDetails!.rideRequestId!)
-        .child('end_trip')
-        .set(endTrip);
-    FirebaseDatabase.instance
-        .ref()
-        .child("All Ride Request")
-        .child(widget.userRideRequestDetails!.rideRequestId!)
-        .child("status")
-        .set("ended");
-    FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(currentFirebaseUser!.uid)
-        .child("newRideRequest")
-        .set("idle");
-    FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(currentFirebaseUser!.uid)
-        .child("newRideStatus")
-        .set("idle");
+    Map endTrip = {"fare_amount": totalFareAmount, "end_trip_time": DateTime.now().toString()};
+    FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child('end_trip').set(endTrip);
+    FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!).child("status").set("ended");
+    FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideRequest").set("idle");
+    FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideStatus").set("idle");
     streamSubscriptionDriverLivePosition!.cancel();
 
     Navigator.pop(context);
@@ -570,40 +520,21 @@ class _NewTripScreenState extends State<NewTripScreen> {
   }
 
   saveFareAmountDriverEarnings(int totalFareAmount) {
-    FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(currentFirebaseUser!.uid)
-        .child("earnings")
-        .once()
-        .then((snap) {
+    FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("earnings").once().then((snap) {
       if (snap.snapshot.value != null) {
         //if the driver have existing earnings
         double oldEarning = double.parse(snap.snapshot.value.toString());
         double driverTotalEarnings = oldEarning + totalFareAmount;
-        FirebaseDatabase.instance
-            .ref()
-            .child("drivers")
-            .child(currentFirebaseUser!.uid)
-            .child("earnings")
-            .set(driverTotalEarnings.toString());
+        FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("earnings").set(driverTotalEarnings.toString());
       } else {
         //if driver has first time earning
-        FirebaseDatabase.instance
-            .ref()
-            .child("drivers")
-            .child(currentFirebaseUser!.uid)
-            .child("earnings")
-            .set(totalFareAmount.toString());
+        FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("earnings").set(totalFareAmount.toString());
       }
     });
   }
 
   void saveAssignedDriverDetailToUserRideRequest() {
-    tripRef = FirebaseDatabase.instance
-        .ref()
-        .child("All Ride Request")
-        .child(widget.userRideRequestDetails!.rideRequestId!);
+    tripRef = FirebaseDatabase.instance.ref().child("All Ride Request").child(widget.userRideRequestDetails!.rideRequestId!);
     Map driverLocationDataMap = {
       "latitude": driverCurrentPosition!.latitude,
       "longitude": driverCurrentPosition!.longitude,
@@ -613,11 +544,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
     tripRef!.child("driverId").set(onlineDriverData.id);
     tripRef!.child("driverName").set(onlineDriverData.name);
     tripRef!.child("driverPhone").set(onlineDriverData.phone);
-    tripRef!.child("car_details").set(onlineDriverData.car_color.toString() +
-        " " +
-        onlineDriverData.car_model.toString() +
-        " " +
-        onlineDriverData.car_number.toString());
+    tripRef!.child("car_details").set(onlineDriverData.car_color.toString() + " " + onlineDriverData.car_model.toString() + " " + onlineDriverData.car_number.toString());
 
     saveRideRequestIdToDriverHistory();
     //Check if User will cancel the trip request
@@ -635,10 +562,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
           streamSubscriptionDriverLivePosition!.cancel();
           streamSubscriptionDriverLivePosition = null;
 
-          var response = await showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (BuildContext context) => TripCanceled());
+          var response = await showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => TripCanceled());
           if (response == 'tripCanceled') {
             tripRef!.onDisconnect();
             tripRef = null;
@@ -660,14 +584,8 @@ class _NewTripScreenState extends State<NewTripScreen> {
   }
 
   void saveRideRequestIdToDriverHistory() {
-    DatabaseReference tripsHistoryRef = FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(currentFirebaseUser!.uid)
-        .child("trip_history");
+    DatabaseReference tripsHistoryRef = FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("trip_history");
 
-    tripsHistoryRef
-        .child(widget.userRideRequestDetails!.rideRequestId!)
-        .set(true);
+    tripsHistoryRef.child(widget.userRideRequestDetails!.rideRequestId!).set(true);
   }
 }

@@ -11,6 +11,7 @@ import 'package:edriver/tabPages/profile_tab.dart';
 import 'package:edriver/widgets/trip_declined.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -43,13 +44,19 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.only(left: 20),
-              child: Text(
-                "ehatid driver",
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 28, fontFamily: 'Muli'),
-              ),
-            ),
+            Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Text(
+                  "ehatid",
+                  style: GoogleFonts.baloo2(
+                    letterSpacing: -1,
+                    textStyle: const TextStyle(
+                      color: Color(0xFF4F6CAD),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 50,
+                    ),
+                  ),
+                )),
             const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.all(16),
@@ -128,7 +135,7 @@ class _HomeState extends State<Home> {
                         },
                       ),
                       buildPetCategory(
-                        category: 'Trip Hsitory',
+                        category: 'Trip History',
                         color: Colors.white,
                         image: 'images/history.png',
                         onTap: () {

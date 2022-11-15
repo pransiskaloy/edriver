@@ -8,6 +8,8 @@ class UserRideRequestInformation {
   String? userName;
   String? userPhone;
   String? rideRequestId;
+  String? petQuantity;
+  String? petDescription;
 
   UserRideRequestInformation({
     this.originLatLng,
@@ -17,5 +19,7 @@ class UserRideRequestInformation {
     this.userName,
     this.userPhone,
     this.rideRequestId,
+    this.petQuantity,
+    this.petDescription,
   });
 }

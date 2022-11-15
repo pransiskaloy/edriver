@@ -50,6 +50,7 @@ dependencies:
   smooth_star_rating_nsafe: ^1.0.0+1
   image_picker: ^0.8.5+3
   firebase_storage: ^10.3.11
+  intl: ^0.17.0
   
 
 dev_dependencies:

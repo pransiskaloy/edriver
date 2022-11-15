@@ -103,8 +103,10 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
               width: MediaQuery.of(context).size.width * .93,
               padding: const EdgeInsets.all(15),
               child: TextField(
+                maxLength: 15,
                 controller: carNumberTextEditingController,
                 decoration: InputDecoration(
+                    counterText: '',
                     prefixIcon: const Padding(
                       padding: EdgeInsets.only(left: 10.0),
                       child: Icon(

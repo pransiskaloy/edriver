@@ -26,7 +26,6 @@ class NotificationDialogBox extends StatefulWidget {
 class _NotificationDialogBoxState extends State<NotificationDialogBox> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     AssistantMethods.pauseLiveLocationUpdates();
   }
@@ -122,8 +121,70 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                       ),
                       Expanded(
                         child: Text(
-                          widget.userRideRequestDetails?.destinationAddress ??
-                              "",
+                          widget.userRideRequestDetails?.destinationAddress ?? "",
+                          style: GoogleFonts.poppins(
+                            textStyle: const TextStyle(
+                              color: Color(0xFF4F6CAD),
+                              fontWeight: FontWeight.w200,
+                              fontSize: 17,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 30,
+                ),
+                //pet quantity with icon
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        "images/quantity.png",
+                        width: 40,
+                        height: 40,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Text(
+                          widget.userRideRequestDetails?.petQuantity ?? "",
+                          style: GoogleFonts.poppins(
+                            textStyle: const TextStyle(
+                              color: Color(0xFF4F6CAD),
+                              fontWeight: FontWeight.w200,
+                              fontSize: 17,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                //pet quantity with icon
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        "images/notes.png",
+                        width: 40,
+                        height: 40,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Text(
+                          widget.userRideRequestDetails?.petDescription ?? "",
                           style: GoogleFonts.poppins(
                             textStyle: const TextStyle(
                               color: Color(0xFF4F6CAD),
@@ -148,8 +209,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                   height: 5,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 20.0, right: 20.0, bottom: 10),
+                  padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -159,9 +219,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                           audioPlayer.stop();
                           audioPlayer = AssetsAudioPlayer();
 
-                          DatabaseReference declineTrip =
-                              FirebaseDatabase.instance.ref().child(
-                                  'drivers/${currentFirebaseUser!.uid}/newRideRequest');
+                          DatabaseReference declineTrip = FirebaseDatabase.instance.ref().child('drivers/${currentFirebaseUser!.uid}/newRideRequest');
                           declineTrip.set('canceled');
                           AssistantMethods.pauseLiveLocationUpdates();
                           MyApp.restartApp(context);
@@ -171,8 +229,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                           elevation: 0,
                           side: const BorderSide(width: 1, color: Colors.red),
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(50), // <-- Radius
+                            borderRadius: BorderRadius.circular(50), // <-- Radius
                           ),
                         ),
                         child: Text(
@@ -198,8 +255,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                           primary: Colors.green,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(50), // <-- Radius
+                            borderRadius: BorderRadius.circular(50), // <-- Radius
                           ),
                         ),
                         child: Text(
@@ -224,15 +280,10 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
   }
 
   void acceptRideRequest(BuildContext context) {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) =>
-            ProgressDialog(status: 'Accepting Trip...'));
+    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => ProgressDialog(status: 'Accepting Trip...'));
     String getRideRequestId = "";
     String uid = currentFirebaseUser!.uid;
-    DatabaseReference newTripref =
-        FirebaseDatabase.instance.ref('drivers/$uid/newRideRequest');
+    DatabaseReference newTripref = FirebaseDatabase.instance.ref('drivers/$uid/newRideRequest');
 
     newTripref.once().then((snap) async {
       Navigator.of(context).pop();
@@ -267,11 +318,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
         newTripref.set('accepted');
         print("Trip Accepted");
         AssistantMethods.pauseLiveLocationUpdates();
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (c) => NewTripScreen(
-                    userRideRequestDetails: widget.userRideRequestDetails)));
+        Navigator.push(context, MaterialPageRoute(builder: (c) => NewTripScreen(userRideRequestDetails: widget.userRideRequestDetails)));
         //if trip has been cancled
       } else if (thisTripID == 'Canceled') {
         audioPlayer.pause();
@@ -304,8 +351,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                 ));
         if (response == 'timedout') {
           Navigator.of(context).pop();
-          Navigator.push(
-              context, MaterialPageRoute(builder: (c) => MySplashScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (c) => MySplashScreen()));
         }
         // if trip not found
       } else {

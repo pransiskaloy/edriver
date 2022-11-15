@@ -135,7 +135,7 @@ class AssistantMethods {
     var tripsAllKeys = Provider.of<AppInfo>(context, listen: false).historyTripsKeysList;
 
     for (String eachKey in tripsAllKeys) {
-      FirebaseDatabase.instance.ref().child("All Ride Request").child(eachKey).once().then((snap) {
+      FirebaseDatabase.instance.ref().child("All Ride Request").child(eachKey).orderByChild("time").once().then((snap) {
         var eachHistoryTrip = TripsHistoryModel.fromSnapshot(snap.snapshot);
 
         if ((snap.snapshot.value as Map)["status"] == "ended") {

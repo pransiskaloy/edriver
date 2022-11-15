@@ -36,9 +36,9 @@ class GuideDialog extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    'We do not have camera support yet. Make sure you have\n'
-                    'these images already taken ready to be uploaded. Make sure it is clear and legit.\n'
-                    '-License Image\nImage of Self\nPicture with License\nCar Image',
+                    'We do not have camera support yet. Make sure you have '
+                    'these images already taken ready to be uploaded. Make sure it is clear and legit. '
+                    "- Profile Picture \n- Driver's License \n- Car Image \n- Image with your License",
                     textAlign: TextAlign.justify,
                     style: TextStyle(fontFamily: 'Muli', fontSize: 18),
                   ),

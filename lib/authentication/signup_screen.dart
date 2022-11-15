@@ -21,7 +21,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController phoneTextEditingController = TextEditingController();
   TextEditingController emailTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
+  TextEditingController passwordTextEditingController2 = TextEditingController();
   bool _passwordVisible = false;
+  bool _passwordVisible2 = false;
+  bool _passwordMatch = true;
 
   validateForm(BuildContext context) {
     if (nameTextEditingController.text.length < 5) {
@@ -32,7 +35,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       showToaster(context, "Phone must have 11 digit number", 'fail');
     } else if (passwordTextEditingController.text.length < 6) {
       showToaster(context, "Password must be at least 6 characters", 'fail');
+    } else if (passwordTextEditingController.text != passwordTextEditingController2.text) {
+      showToaster(context, "Password does not match!", 'fail');
+      setState(() {
+        _passwordMatch = !_passwordMatch;
+      });
     } else {
+      _passwordMatch = !_passwordMatch;
       saveDriverInfo();
     }
   }
@@ -108,7 +117,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Image.asset("images/register.png"),
             Container(
               width: MediaQuery.of(context).size.width * .93,
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
               child: TextField(
                 controller: nameTextEditingController,
                 decoration: InputDecoration(
@@ -148,7 +157,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             Container(
               width: MediaQuery.of(context).size.width * .93,
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
               child: TextField(
                 controller: emailTextEditingController,
                 keyboardType: TextInputType.emailAddress,
@@ -189,7 +198,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             Container(
               width: MediaQuery.of(context).size.width * .93,
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
               child: TextField(
                 keyboardType: TextInputType.phone,
                 controller: phoneTextEditingController,
@@ -230,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             Container(
               width: MediaQuery.of(context).size.width * .93,
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
               child: TextField(
                 controller: passwordTextEditingController,
                 keyboardType: TextInputType.text,
@@ -287,6 +296,65 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     fillColor: Colors.white70),
               ),
             ),
+            Container(
+              width: MediaQuery.of(context).size.width * .93,
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+              child: TextField(
+                controller: passwordTextEditingController2,
+                keyboardType: TextInputType.text,
+                obscureText: !_passwordVisible2,
+                decoration: InputDecoration(
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.only(left: 10.0),
+                      child: Icon(
+                        Icons.lock_rounded,
+                        color: (_passwordMatch ? const Color(0xFF4F6CAD) : Colors.red),
+                        size: 20,
+                      ),
+                    ),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: IconButton(
+                        icon: Icon(
+                          // Based on passwordVisible state choose the icon
+                          _passwordVisible2 ? Icons.visibility : Icons.visibility_off,
+                          color: const Color(0xFF4F6CAD),
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          // Update the state i.e. toogle the state of passwordVisible variable
+                          setState(() {
+                            _passwordVisible2 = !_passwordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.only(left: 30),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(Radius.circular(40.0)),
+                      borderSide: BorderSide(color: (_passwordMatch ? const Color(0xFF4F6CAD) : Colors.red)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(Radius.circular(40.0)),
+                      borderSide: BorderSide(color: (_passwordMatch ? const Color(0xFF4F6CAD) : Colors.red)),
+                    ),
+                    filled: true,
+                    hintText: "*******",
+                    hintStyle: const TextStyle(
+                      color: Color.fromARGB(255, 172, 170, 170),
+                      letterSpacing: 1.5,
+                    ),
+                    labelText: "Confirm Password",
+                    labelStyle: TextStyle(
+                      color: (_passwordMatch ? const Color(0xFF4F6CAD) : Colors.red),
+                      fontSize: 18,
+                    ),
+                    fillColor: Colors.white70),
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -311,7 +379,62 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ],
             ),
             const SizedBox(
-              height: 20,
+              height: 30,
+            ),
+            Text(
+              'By clicking Sign Up, you agree to our',
+              style: GoogleFonts.poppins(textStyle: TextStyle(color: Color(0xFF4F6CAD), fontSize: 15)),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  child: Text(
+                    ' Terms and Conditions',
+                    style: GoogleFonts.poppins(textStyle: const TextStyle(color: Color(0xFF4F6CAD), fontSize: 15, fontWeight: FontWeight.bold)),
+                  ),
+                  onTap: () {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Container(
+                          height: MediaQuery.of(context).size.height,
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(40),
+                              topLeft: Radius.circular(40),
+                            ),
+                          ),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                const Text('Modal BottomSheet'),
+                                ElevatedButton(
+                                  child: const Text('Close BottomSheet'),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+                Text(
+                  ', and',
+                  style: GoogleFonts.poppins(textStyle: const TextStyle(color: Color(0xFF4F6CAD), fontSize: 15)),
+                ),
+                Text(
+                  ' Privacy Policy.',
+                  style: GoogleFonts.poppins(textStyle: const TextStyle(color: Color(0xFF4F6CAD), fontSize: 15, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 30,
             ),
             ElevatedButton(
               onPressed: () {
@@ -329,7 +452,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 width: MediaQuery.of(context).size.width * .4,
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: Text(
-                  "Proceed",
+                  "Sign Up",
                   style: GoogleFonts.poppins(
                     textStyle: const TextStyle(
                       letterSpacing: 1,
