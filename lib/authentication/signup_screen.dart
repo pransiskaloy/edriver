@@ -79,7 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         "password": passwordTextEditingController.text.trim(),
         "date_created": DateTime.now().toString(),
         "ImagesUploaded": "notyet",
-        "status": "active",
+        "status": "forApproval",
       };
       DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
       driversRef.child(firebaseUser.uid).set(driverMap);
