@@ -99,6 +99,8 @@ class _HomeState extends State<Home> {
                                 driverStatus.once().then((snap) async {
                                   if (snap.snapshot.value != null) {
                                     String status = snap.snapshot.value.toString();
+                                    print("Status=-========================================================");
+                                    print(status);
                                     if (status == 'active') {
                                       Navigator.of(context).pop();
                                       Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => HomeTabPage()));
@@ -109,9 +111,9 @@ class _HomeState extends State<Home> {
                                           builder: (BuildContext context) => TripDecline(
                                                 title: 'Important Notification',
                                                 description: 'Your Account is currently for approval',
-                                                respo: 'forapproval',
+                                                respo: 'forApproval',
                                               ));
-                                      if (response == 'forapproval') {
+                                      if (response == 'forApproval') {
                                         Navigator.of(context).pop();
                                       }
                                     } else if (status == 'Restricted') {
