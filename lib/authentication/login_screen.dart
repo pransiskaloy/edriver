@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:edriver/authentication/forgotPassword.dart';
 
 import '../global/global.dart';
 import '../widgets/progress_dialog.dart';
@@ -21,7 +22,8 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordTextEditingController = TextEditingController();
   bool _passwordVisible = false;
   validateForm(BuildContext context) {
-    if (!emailTextEditingController.text.contains("@") || !emailTextEditingController.text.contains(".")) {
+    if (!emailTextEditingController.text.contains("@") ||
+        !emailTextEditingController.text.contains(".")) {
       showToaster(context, "Please enter a valid email", 'fail');
     } else if (passwordTextEditingController.text.isNotEmpty) {
       if (passwordTextEditingController.text.length < 6) {
@@ -56,7 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }))
         .user;
     if (firebaseUser != null) {
-      DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
+      DatabaseReference driversRef =
+          FirebaseDatabase.instance.ref().child("drivers");
       driversRef.child(firebaseUser.uid).once().then((driverKey) {
         final snap = driverKey.snapshot;
         if (snap.value != null) {
@@ -66,7 +69,8 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           fAuth.signOut();
           showToaster(context, "No record exist with this credential.", "fail");
-          Navigator.push(context, MaterialPageRoute(builder: (c) => const LoginScreen()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (c) => const LoginScreen()));
         }
       });
     } else {
@@ -82,9 +86,12 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackBar(
         content: Text(
           str,
-          style: status == "success" ? const TextStyle(color: Colors.green, fontSize: 15) : const TextStyle(color: Colors.red, fontSize: 15),
+          style: status == "success"
+              ? const TextStyle(color: Colors.green, fontSize: 15)
+              : const TextStyle(color: Colors.red, fontSize: 15),
         ),
-        action: SnackBarAction(label: 'Close', onPressed: scaffold.hideCurrentSnackBar),
+        action: SnackBarAction(
+            label: 'Close', onPressed: scaffold.hideCurrentSnackBar),
       ),
     );
   }
@@ -166,7 +173,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: IconButton(
                         icon: Icon(
                           // Based on passwordVisible state choose the icon
-                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                          _passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: const Color(0xFF4F6CAD),
                           size: 20,
                         ),
@@ -200,23 +209,29 @@ class _LoginScreenState extends State<LoginScreen> {
                     fillColor: Colors.white70),
               ),
             ),
-            // Padding(
-            //   padding: const EdgeInsets.only(right: 45),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.end,
-            //     children: [
-            //       Text(
-            //         "Forgot Password",
-            //         style: GoogleFonts.poppins(
-            //           textStyle: const TextStyle(
-            //             fontSize: 15,
-            //             color: Color(0xFF4F6CAD),
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
+            GestureDetector(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 45),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Forgot Password",
+                      style: GoogleFonts.poppins(
+                        textStyle: const TextStyle(
+                          fontSize: 15,
+                          color: Color(0xFF4F6CAD),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (c) => ForgotPassword()));
+              },
+            ),
             const SizedBox(
               height: 25,
             ),
@@ -235,11 +250,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextButton(
                   child: Text("Sign Up here",
                       style: GoogleFonts.poppins(
-                        textStyle: const TextStyle(color: Color(0xFF4F6CAD), fontSize: 17, fontWeight: FontWeight.bold),
+                        textStyle: const TextStyle(
+                            color: Color(0xFF4F6CAD),
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold),
                       )),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    Navigator.push(context, MaterialPageRoute(builder: (c) => const SignUpScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (c) => const SignUpScreen()));
                   },
                 ),
               ],
