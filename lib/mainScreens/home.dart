@@ -92,8 +92,6 @@ class _HomeState extends State<Home> {
                                   'drivers/${currentFirebaseUser!.uid}/ImagesUploaded');
 
                           uploadImager.once().then((snap) async {
-                            print(snap.snapshot.value);
-                            print("pressed");
                             if (snap.snapshot.value != null) {
                               String status = snap.snapshot.value.toString();
                               if (status == 'notyet') {
@@ -107,6 +105,8 @@ class _HomeState extends State<Home> {
                                     FirebaseDatabase.instance.ref(
                                         'drivers/${currentFirebaseUser!.uid}/status');
                                 driverStatus.once().then((snap) async {
+                                  print(snap.snapshot.value.toString());
+                                  print("pressed");
                                   if (snap.snapshot.value != null) {
                                     String status =
                                         snap.snapshot.value.toString();
@@ -125,12 +125,12 @@ class _HomeState extends State<Home> {
                                                 title: 'Important Notification',
                                                 description:
                                                     'Your Account is currently for approval',
-                                                respo: 'forapproval',
+                                                respo: 'forApproval',
                                               ));
-                                      if (response == 'forapproval') {
+                                      if (response == 'forApproval') {
                                         Navigator.of(context).pop();
                                       }
-                                    } else if (status == 'Restricted') {
+                                    } else if (status == 'restricted') {
                                       var response = await showDialog(
                                           context: context,
                                           barrierDismissible: false,
@@ -138,7 +138,7 @@ class _HomeState extends State<Home> {
                                               TripDecline(
                                                 title: 'Important Notification',
                                                 description:
-                                                    'Your Account is currently for Restricted',
+                                                    'Your Account is currently restricted. Please contact the manangement for more information.',
                                                 respo: 'restricted',
                                               ));
                                       if (response == 'restricted') {

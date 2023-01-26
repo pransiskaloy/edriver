@@ -185,6 +185,7 @@ class _UploadSelfPhotoState extends State<UploadSelfPhoto> {
       } catch (e) {
         // ignore: avoid_print
         print('No image path');
+        print(e.toString());
       }
     } else {
       return;
