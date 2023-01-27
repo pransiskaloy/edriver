@@ -32,15 +32,20 @@ class TripDecline extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 22.0, fontFamily: 'Muli'),
+                  style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 25.0,
+                      fontFamily: 'Muli',
+                      fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 25),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Text(
                     description,
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.justify,
                     maxLines: 3,
+                    style: const TextStyle(fontSize: 18),
                   ),
                 ),
                 const SizedBox(height: 30),

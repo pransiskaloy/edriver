@@ -87,42 +87,58 @@ class _HomeState extends State<Home> {
                         color: Colors.white,
                         image: 'images/new_trip.png',
                         onTap: () {
-                          DatabaseReference uploadImager = FirebaseDatabase.instance.ref('drivers/${currentFirebaseUser!.uid}/ImagesUploaded');
+                          DatabaseReference uploadImager =
+                              FirebaseDatabase.instance.ref(
+                                  'drivers/${currentFirebaseUser!.uid}/ImagesUploaded');
 
                           uploadImager.once().then((snap) async {
                             if (snap.snapshot.value != null) {
                               String status = snap.snapshot.value.toString();
                               if (status == 'notyet') {
-                                var response = await showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => TripCancelationDialog());
+                                var response = await showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (BuildContext context) =>
+                                        TripCancelationDialog());
                               } else {
-                                DatabaseReference driverStatus = FirebaseDatabase.instance.ref('drivers/${currentFirebaseUser!.uid}/status');
+                                DatabaseReference driverStatus =
+                                    FirebaseDatabase.instance.ref(
+                                        'drivers/${currentFirebaseUser!.uid}/status');
                                 driverStatus.once().then((snap) async {
+                                  print(snap.snapshot.value.toString());
+                                  print("pressed");
                                   if (snap.snapshot.value != null) {
-                                    String status = snap.snapshot.value.toString();
-                                    print("Status=-========================================================");
-                                    print(status);
+                                    String status =
+                                        snap.snapshot.value.toString();
                                     if (status == 'active') {
                                       Navigator.of(context).pop();
-                                      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => HomeTabPage()));
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  HomeTabPage()));
                                     } else if (status == 'forApproval') {
                                       var response = await showDialog(
                                           context: context,
                                           barrierDismissible: false,
-                                          builder: (BuildContext context) => TripDecline(
+                                          builder: (BuildContext context) =>
+                                              TripDecline(
                                                 title: 'Important Notification',
-                                                description: 'Your Account is currently for approval',
+                                                description:
+                                                    'Your Account is currently for approval',
                                                 respo: 'forApproval',
                                               ));
                                       if (response == 'forApproval') {
                                         Navigator.of(context).pop();
                                       }
-                                    } else if (status == 'Restricted') {
+                                    } else if (status == 'restricted') {
                                       var response = await showDialog(
                                           context: context,
                                           barrierDismissible: false,
-                                          builder: (BuildContext context) => TripDecline(
+                                          builder: (BuildContext context) =>
+                                              TripDecline(
                                                 title: 'Important Notification',
-                                                description: 'Your Account is currently for Restricted',
+                                                description:
+                                                    'Your Account is currently restricted. Please contact the manangement for more information.',
                                                 respo: 'restricted',
                                               ));
                                       if (response == 'restricted') {
@@ -141,7 +157,9 @@ class _HomeState extends State<Home> {
                         color: Colors.white,
                         image: 'images/history.png',
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => const RatingsTabPage()));
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  const RatingsTabPage()));
                         },
                       ),
                     ],
@@ -178,10 +196,16 @@ class _HomeState extends State<Home> {
                         color: Colors.white,
                         image: 'images/user.png',
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => ProfileTabPage()));
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  ProfileTabPage()));
                         },
                       ),
-                      buildPetCategory(category: 'Support', color: Colors.white, image: 'images/customer-service.png', onTap: () {}),
+                      buildPetCategory(
+                          category: 'Support',
+                          color: Colors.white,
+                          image: 'images/customer-service.png',
+                          onTap: () {}),
                     ],
                   ),
                   Row(
@@ -207,7 +231,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget buildPetCategory({String? category, String? image, Color? color, onTap}) {
+  Widget buildPetCategory(
+      {String? category, String? image, Color? color, onTap}) {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
