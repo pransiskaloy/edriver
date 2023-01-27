@@ -24,26 +24,26 @@ class _FareAmountCollectionDialogState
       backgroundColor: Colors.white,
       child: Container(
         margin: const EdgeInsets.all(5),
-        height: MediaQuery.of(context).size.height * .40,
+        height: MediaQuery.of(context).size.height * .45,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(6)),
         child: Column(
           children: [
             const SizedBox(
-              height: 20,
+              height: 5,
             ),
             Text(
-              "Trip Fare Amount ( " + driverVehicleType! + " )",
+              "Trip Ended".toUpperCase(),
               style: GoogleFonts.poppins(
                 textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 17,
+                    fontSize: 38,
                     color: Color(0xFF4F6CAD)),
               ),
             ),
             const SizedBox(
-              height: 20,
+              height: 5,
             ),
             const Divider(
               thickness: 1,
@@ -95,7 +95,7 @@ class _FareAmountCollectionDialogState
                 ),
               ),
               child: Text(
-                "₱ COLLECT",
+                "Cash Received",
                 style: GoogleFonts.poppins(
                   textStyle: const TextStyle(
                     color: Colors.white,
