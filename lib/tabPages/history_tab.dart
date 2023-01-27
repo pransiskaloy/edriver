@@ -20,10 +20,14 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded, color: Color(0xFF4F6CAD)),
+          icon: const Icon(Icons.arrow_back_ios_rounded,
+              color: Color(0xFF4F6CAD)),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text("Trip History", style: GoogleFonts.poppins(textStyle: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4F6CAD)))),
+        title: Text("Trip History",
+            style: GoogleFonts.poppins(
+                textStyle: const TextStyle(
+                    fontWeight: FontWeight.bold, color: Color(0xFF4F6CAD)))),
         centerTitle: true,
       ),
       body: Column(
@@ -58,11 +62,20 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
                 children: [
                   Text(
                     "TRIPS COMPLETED",
-                    style: GoogleFonts.poppins(textStyle: const TextStyle(fontSize: 25, color: Color(0xFF969B9F))),
+                    style: GoogleFonts.poppins(
+                        textStyle: const TextStyle(
+                            fontSize: 25, color: Color(0xFF969B9F))),
                   ),
                   Text(
-                    Provider.of<AppInfo>(context, listen: false).allTripsHistoryInformationList.length.toString(),
-                    style: GoogleFonts.poppins(textStyle: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Color(0xFF354859))),
+                    Provider.of<AppInfo>(context, listen: false)
+                        .allTripsHistoryInformationList
+                        .length
+                        .toString(),
+                    style: GoogleFonts.poppins(
+                        textStyle: const TextStyle(
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF354859))),
                   ),
                 ],
               ),
@@ -75,7 +88,10 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "Transaction history",
-                style: GoogleFonts.poppins(letterSpacing: 2, textStyle: const TextStyle(fontSize: 20, color: Color(0xFF969B9F))),
+                style: GoogleFonts.poppins(
+                    letterSpacing: 2,
+                    textStyle: const TextStyle(
+                        fontSize: 20, color: Color(0xFF969B9F))),
               ),
             ),
           ),
@@ -85,10 +101,13 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, i) {
                 return HistoryDisplay(
-                  tripHistoryModel: Provider.of<AppInfo>(context, listen: false).allTripsHistoryInformationList[i],
+                  tripHistoryModel: Provider.of<AppInfo>(context, listen: false)
+                      .allTripsHistoryInformationList[i],
                 );
               },
-              itemCount: Provider.of<AppInfo>(context, listen: false).allTripsHistoryInformationList.length,
+              itemCount: Provider.of<AppInfo>(context, listen: false)
+                  .allTripsHistoryInformationList
+                  .length,
               shrinkWrap: true,
             ),
           ),
