@@ -1,22 +1,21 @@
 import 'dart:io';
 
-import 'package:edriver/authentication/images/car_photo.dart';
+import 'package:edriver/authentication/images/orcr.dart';
 import 'package:edriver/global/global.dart';
+import 'package:edriver/widgets/progress_dialog.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../widgets/progress_dialog.dart';
-
-class LiscensePhoto extends StatefulWidget {
-  const LiscensePhoto({Key? key}) : super(key: key);
+class NbiOrPolice extends StatefulWidget {
+  const NbiOrPolice({Key? key}) : super(key: key);
 
   @override
-  State<LiscensePhoto> createState() => _LiscensePhotoState();
+  State<NbiOrPolice> createState() => _NbiOrPoliceState();
 }
 
-class _LiscensePhotoState extends State<LiscensePhoto> {
+class _NbiOrPoliceState extends State<NbiOrPolice> {
   String? imageUrl;
   @override
   void initState() {
@@ -147,7 +146,7 @@ class _LiscensePhotoState extends State<LiscensePhoto> {
                     onPressed: () {
                       Navigator.of(context).pop();
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) => CarPhoto()));
+                          builder: (BuildContext context) => OrCr()));
                     },
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0xFF4F6CAD),
@@ -188,7 +187,7 @@ class _LiscensePhotoState extends State<LiscensePhoto> {
 
     if (file != null) {
       Reference referenceRoot = FirebaseStorage.instance.ref();
-      Reference referenceDirImage = referenceRoot.child('liscenseimage');
+      Reference referenceDirImage = referenceRoot.child('nbiimage');
       Reference referenceUpload = referenceDirImage.child(uid);
       try {
         await referenceUpload.putFile(File(file.path));
