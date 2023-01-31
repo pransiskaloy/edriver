@@ -29,7 +29,7 @@ class _NbiOrPoliceState extends State<NbiOrPolice> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Image.asset("images/license.png"),
+          Image.asset("images/nbi.png"),
           (imageUrl != null)
               ? Center(
                   child: SizedBox(

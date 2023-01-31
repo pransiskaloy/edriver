@@ -29,7 +29,7 @@ class _OrCrState extends State<OrCr> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Image.asset("images/license.png"),
+          Image.asset("images/orcr.png"),
           (imageUrl != null)
               ? Center(
                   child: SizedBox(
