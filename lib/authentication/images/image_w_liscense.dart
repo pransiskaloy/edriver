@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:edriver/authentication/carinfo_screen.dart';
+import 'package:edriver/authentication/images/nbi.dart';
 import 'package:edriver/global/global.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -145,7 +146,8 @@ class _ImageWLiscenseState extends State<ImageWLiscense> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CarInfoScreen()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) => NbiOrPolice()));
                     },
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0xFF4F6CAD),
@@ -178,7 +180,11 @@ class _ImageWLiscenseState extends State<ImageWLiscense> {
   chooseImage(String uid) async {
     ImagePicker imagePicker = ImagePicker();
     XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
-    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => ProgressDialog(message: 'Uploading.....'));
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) =>
+            ProgressDialog(message: 'Uploading.....'));
 
     if (file != null) {
       Reference referenceRoot = FirebaseStorage.instance.ref();
