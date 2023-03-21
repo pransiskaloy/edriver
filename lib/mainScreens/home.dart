@@ -29,6 +29,8 @@ class _HomeState extends State<Home> {
     AssistantMethods.readDriverRatings(context);
     AssistantMethods.readDriverEarnings(context);
     AssistantMethods.readTripKeysForOnlineDriver(context);
+    AssistantMethods.getBaseFare();
+    AssistantMethods.getValues();
   }
 
   @override
