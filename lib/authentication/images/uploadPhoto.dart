@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:edriver/authentication/images/liscense_photo.dart';
 import 'package:edriver/global/global.dart';
 import 'package:edriver/widgets/progress_dialog.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -137,7 +138,8 @@ class _UploadSelfPhotoState extends State<UploadSelfPhoto> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => LiscensePhoto()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) => LiscensePhoto()));
                     },
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0xFF4F6CAD),
@@ -170,17 +172,25 @@ class _UploadSelfPhotoState extends State<UploadSelfPhoto> {
   chooseImage(String uid) async {
     ImagePicker imagePicker = ImagePicker();
     XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
-    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => ProgressDialog(message: 'Uploading.....'));
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) =>
+            ProgressDialog(message: 'Uploading.....'));
 
     if (file != null) {
       Reference referenceRoot = FirebaseStorage.instance.ref();
       Reference referenceDirImage = referenceRoot.child('profileImage');
       Reference referenceUpload = referenceDirImage.child(uid);
+      DatabaseReference imageRef = FirebaseDatabase.instance
+          .ref()
+          .child("drivers/${currentFirebaseUser!.uid}/profileImage");
       try {
         await referenceUpload.putFile(File(file.path));
         var downloadurl = await referenceUpload.getDownloadURL();
         setState(() {
           imageUrl = downloadurl;
+          imageRef.set(downloadurl);
         });
       } catch (e) {
         // ignore: avoid_print

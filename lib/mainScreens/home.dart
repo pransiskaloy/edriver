@@ -7,6 +7,7 @@ import 'package:edriver/splashScreen/splash_screen.dart';
 import 'package:edriver/splashScreen/trip_cancelation.dart';
 import 'package:edriver/tabPages/earnings_tab.dart';
 import 'package:edriver/tabPages/history_tab.dart';
+import 'package:edriver/tabPages/manual_tab.dart';
 import 'package:edriver/tabPages/profile_tab.dart';
 import 'package:edriver/widgets/trip_declined.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -28,6 +29,8 @@ class _HomeState extends State<Home> {
     AssistantMethods.readDriverRatings(context);
     AssistantMethods.readDriverEarnings(context);
     AssistantMethods.readTripKeysForOnlineDriver(context);
+    AssistantMethods.getBaseFare();
+    AssistantMethods.getValues();
   }
 
   @override
@@ -202,10 +205,14 @@ class _HomeState extends State<Home> {
                         },
                       ),
                       buildPetCategory(
-                          category: 'Support',
+                          category: 'Help',
                           color: Colors.white,
                           image: 'images/customer-service.png',
-                          onTap: () {}),
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    MyHomePage()));
+                          }),
                     ],
                   ),
                   Row(
