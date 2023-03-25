@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:edriver/authentication/images/image_w_liscense.dart';
 import 'package:edriver/global/global.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -145,7 +146,8 @@ class _CarPhotoState extends State<CarPhoto> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => ImageWLiscense()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) => ImageWLiscense()));
                     },
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0xFF4F6CAD),
@@ -178,17 +180,26 @@ class _CarPhotoState extends State<CarPhoto> {
   chooseImage(String uid) async {
     ImagePicker imagePicker = ImagePicker();
     XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
-    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) => ProgressDialog(message: 'Uploading.....'));
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) =>
+            ProgressDialog(message: 'Uploading.....'));
 
     if (file != null) {
       Reference referenceRoot = FirebaseStorage.instance.ref();
       Reference referenceDirImage = referenceRoot.child('carimage');
       Reference referenceUpload = referenceDirImage.child(uid);
+      DatabaseReference imageRef = FirebaseDatabase.instance
+          .ref()
+          .child("drivers/${currentFirebaseUser!.uid}/carimage");
+
       try {
         await referenceUpload.putFile(File(file.path));
         var downloadurl = await referenceUpload.getDownloadURL();
         setState(() {
           imageUrl = downloadurl;
+          imageRef.set(downloadurl);
         });
       } catch (e) {
         // ignore: avoid_print

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:edriver/authentication/images/car_photo.dart';
 import 'package:edriver/global/global.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -190,11 +191,15 @@ class _LiscensePhotoState extends State<LiscensePhoto> {
       Reference referenceRoot = FirebaseStorage.instance.ref();
       Reference referenceDirImage = referenceRoot.child('liscenseimage');
       Reference referenceUpload = referenceDirImage.child(uid);
+      DatabaseReference imageRef = FirebaseDatabase.instance
+          .ref()
+          .child("drivers/${currentFirebaseUser!.uid}/liscenseimage");
       try {
         await referenceUpload.putFile(File(file.path));
         var downloadurl = await referenceUpload.getDownloadURL();
         setState(() {
           imageUrl = downloadurl;
+          imageRef.set(downloadurl);
         });
       } catch (e) {
         // ignore: avoid_print
