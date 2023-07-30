@@ -14,6 +14,15 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'dart:async';
+import 'dart:developer' as developer;
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../widgets/bottomModal.dart';
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -31,6 +40,52 @@ class _HomeState extends State<Home> {
     AssistantMethods.readTripKeysForOnlineDriver(context);
     AssistantMethods.getBaseFare();
     AssistantMethods.getValues();
+
+    initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+
+  ShowBottomModal showModal = ShowBottomModal();
+  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initConnectivity() async {
+    late ConnectivityResult result;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      developer.log('Couldn\'t check connectivity status', error: e);
+      return;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    setState(() {
+      _connectionStatus = result;
+      print(_connectionStatus.toString());
+      if (_connectionStatus.toString() == "ConnectivityResult.none") {
+        showModal.bottomModal(context, 'images/network.json');
+      }
+    });
   }
 
   @override
@@ -90,69 +145,78 @@ class _HomeState extends State<Home> {
                         color: Colors.white,
                         image: 'images/new_trip.png',
                         onTap: () {
-                          DatabaseReference uploadImager =
-                              FirebaseDatabase.instance.ref(
-                                  'drivers/${currentFirebaseUser!.uid}/ImagesUploaded');
+                          if (_connectionStatus.toString() !=
+                              "ConnectivityResult.none") {
+                            DatabaseReference uploadImager =
+                                FirebaseDatabase.instance.ref(
+                                    'drivers/${currentFirebaseUser!.uid}/ImagesUploaded');
 
-                          uploadImager.once().then((snap) async {
-                            if (snap.snapshot.value != null) {
-                              String status = snap.snapshot.value.toString();
-                              if (status == 'notyet') {
-                                var response = await showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (BuildContext context) =>
-                                        TripCancelationDialog());
-                              } else {
-                                DatabaseReference driverStatus =
-                                    FirebaseDatabase.instance.ref(
-                                        'drivers/${currentFirebaseUser!.uid}/status');
-                                driverStatus.once().then((snap) async {
-                                  print(snap.snapshot.value.toString());
-                                  print("pressed");
-                                  if (snap.snapshot.value != null) {
-                                    String status =
-                                        snap.snapshot.value.toString();
-                                    if (status == 'active') {
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  HomeTabPage()));
-                                    } else if (status == 'forApproval') {
-                                      var response = await showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (BuildContext context) =>
-                                              TripDecline(
-                                                title: 'Important Notification',
-                                                description:
-                                                    'Your Account is currently for approval',
-                                                respo: 'forApproval',
-                                              ));
-                                      if (response == 'forApproval') {
+                            uploadImager.once().then((snap) async {
+                              if (snap.snapshot.value != null) {
+                                String status = snap.snapshot.value.toString();
+                                if (status == 'notyet') {
+                                  var response = await showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context) =>
+                                          TripCancelationDialog());
+                                } else {
+                                  DatabaseReference driverStatus =
+                                      FirebaseDatabase.instance.ref(
+                                          'drivers/${currentFirebaseUser!.uid}/status');
+                                  driverStatus.once().then((snap) async {
+                                    print(snap.snapshot.value.toString());
+                                    print("pressed");
+                                    if (snap.snapshot.value != null) {
+                                      String status =
+                                          snap.snapshot.value.toString();
+                                      if (status == 'active') {
                                         Navigator.of(context).pop();
-                                      }
-                                    } else if (status == 'restricted') {
-                                      var response = await showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (BuildContext context) =>
-                                              TripDecline(
-                                                title: 'Important Notification',
-                                                description:
-                                                    'Your Account is currently restricted. Please contact the manangement for more information.',
-                                                respo: 'restricted',
-                                              ));
-                                      if (response == 'restricted') {
-                                        Navigator.of(context).pop();
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        HomeTabPage()));
+                                      } else if (status == 'forApproval') {
+                                        var response = await showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (BuildContext context) =>
+                                                TripDecline(
+                                                  title:
+                                                      'Important Notification',
+                                                  description:
+                                                      'Your Account is currently for approval',
+                                                  respo: 'forApproval',
+                                                ));
+                                        if (response == 'forApproval') {
+                                          Navigator.of(context).pop();
+                                        }
+                                      } else if (status == 'restricted') {
+                                        var response = await showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (BuildContext context) =>
+                                                TripDecline(
+                                                  title:
+                                                      'Important Notification',
+                                                  description:
+                                                      'Your Account is currently restricted. Please contact the manangement for more information.',
+                                                  respo: 'restricted',
+                                                ));
+                                        if (response == 'restricted') {
+                                          Navigator.of(context).pop();
+                                        }
                                       }
                                     }
-                                  }
-                                });
+                                  });
+                                }
                               }
-                            }
-                          });
+                            });
+                          } else {
+                            showModal.bottomModal(
+                                context, 'images/network.json');
+                          }
                         },
                       ),
                       buildPetCategory(
@@ -160,9 +224,15 @@ class _HomeState extends State<Home> {
                         color: Colors.white,
                         image: 'images/history.png',
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  const RatingsTabPage()));
+                          if (_connectionStatus.toString() !=
+                              "ConnectivityResult.none") {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    const RatingsTabPage()));
+                          } else {
+                            showModal.bottomModal(
+                                context, 'images/network.json');
+                          }
                         },
                       ),
                     ],
@@ -199,9 +269,15 @@ class _HomeState extends State<Home> {
                         color: Colors.white,
                         image: 'images/user.png',
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  ProfileTabPage()));
+                          if (_connectionStatus.toString() !=
+                              "ConnectivityResult.none") {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    ProfileTabPage()));
+                          } else {
+                            showModal.bottomModal(
+                                context, 'images/network.json');
+                          }
                         },
                       ),
                       buildPetCategory(
@@ -209,9 +285,15 @@ class _HomeState extends State<Home> {
                           color: Colors.white,
                           image: 'images/customer-service.png',
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    MyHomePage()));
+                            if (_connectionStatus.toString() !=
+                                "ConnectivityResult.none") {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      MyHomePage()));
+                            } else {
+                              showModal.bottomModal(
+                                  context, 'images/network.json');
+                            }
                           }),
                     ],
                   ),
@@ -223,8 +305,14 @@ class _HomeState extends State<Home> {
                         color: Colors.white,
                         image: 'images/exit.png',
                         onTap: () async {
-                          await fAuth.signOut();
-                          MyApp.restartApp(context);
+                          if (_connectionStatus.toString() !=
+                              "ConnectivityResult.none") {
+                            await fAuth.signOut();
+                            MyApp.restartApp(context);
+                          } else {
+                            showModal.bottomModal(
+                                context, 'images/network.json');
+                          }
                         },
                       ),
                     ],

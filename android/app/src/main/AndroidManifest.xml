@@ -7,7 +7,7 @@
 
 
    <application
-        android:label="Ehatid Driver"
+        android:label="E-hatid Driver"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         

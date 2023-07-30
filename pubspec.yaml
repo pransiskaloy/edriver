@@ -49,10 +49,12 @@ dependencies:
   google_fonts: ^3.0.1
   assets_audio_player: ^3.0.4+1
   smooth_star_rating_nsafe: ^1.0.0+1
-  image_picker: ^0.8.5+3
+  image_picker: ^0.8.4+10
   firebase_storage: ^10.3.11
   intl: ^0.17.0
   flutter_cached_pdfview: ^0.4.1
+  connectivity_plus: ^2.2.1
+  lottie: ^1.2.2
   
 
 
@@ -63,22 +65,22 @@ dev_dependencies:
   flutter_launcher_icons: "^0.11.0"
 
 flutter_icons:
-  image_path: "images/company.png"
+  image_path: "images/app_logo.png"
   android: true
   ios: true
   min_sdk_android: 21 # android min sdk min:16, default 21
   web:
     generate: true
-    image_path: "images/company.png"
+    image_path: "images/app_logo.png"
     background_color: "#hexcode"
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "images/company.png"
+    image_path: "images/app_logo.png"
     icon_size: 48 # min:48, max:256, default: 48
   macos:
     generate: true
-    image_path: "images/company.png"
+    image_path: "images/app_logo.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
