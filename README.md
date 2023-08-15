@@ -7,5 +7,5 @@ Using:
  - Google API
  - Firebase
 
-- [Playstore Link](https://play.google.com/store/apps/details?id=com.badula.euser&fbclid=IwAR1pgC8ZmPUrOiR0Y5AhAcuL-hBdL3Pfsdhgkw7Egd5f_GAZMjrsfMTYTc0)
+- [Playstore Link](https://play.google.com/store/apps/details?id=com.badula.edriver&fbclid=IwAR2RF10Hlw2nJewa1DQkGfqyrktc7HAnCqgbmSP-MYd83ehbo0VVM0xaR0M)
 
