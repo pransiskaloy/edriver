@@ -5,5 +5,5 @@
 Using:
  - Flutter 2.10.0
  - Google API
- - Firebase
+ - Firebase ( Realtime Database and Cloud Messaging)
 
